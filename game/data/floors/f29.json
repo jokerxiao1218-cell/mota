@@ -1,0 +1,807 @@
+{
+ "floor": 29,
+ "tmx": "29.tmx",
+ "grid": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "npc",
+     "layer_id": 13,
+     "kind": "npc",
+     "sprite": "npc1_0",
+     "sprite_id": 1
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 14,
+     "kind": "door",
+     "id": 1006,
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "down",
+     "sprite": "stair_down"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "up",
+     "sprite": "stair_up"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ]
+ ],
+ "stairs": [
+  {
+   "dir": "down",
+   "x": 0,
+   "y": 10
+  },
+  {
+   "dir": "up",
+   "x": 5,
+   "y": 10
+  }
+ ],
+ "npcs": [
+  {
+   "npc": 21,
+   "x": 5,
+   "y": 1
+  }
+ ],
+ "triggers": [],
+ "layer_props": {
+  "stair": {
+   "location": "104,99"
+  },
+  "door": {
+   "passive": "27"
+  },
+  "npc": {
+   "16": "21"
+  }
+ }
+}

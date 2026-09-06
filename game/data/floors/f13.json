@@ -1,0 +1,956 @@
+{
+ "floor": 13,
+ "tmx": "13.tmx",
+ "grid": [
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 12,
+     "sprite": "prop12"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ],
+   [
+    {
+     "layer": "lava",
+     "layer_id": 10,
+     "kind": "lava",
+     "sprite": "fire_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "down",
+     "sprite": "stair_down"
+    }
+   ],
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "up",
+     "sprite": "stair_up"
+    }
+   ]
+  ]
+ ],
+ "stairs": [
+  {
+   "dir": "down",
+   "x": 0,
+   "y": 10
+  },
+  {
+   "dir": "up",
+   "x": 10,
+   "y": 10
+  }
+ ],
+ "npcs": [],
+ "triggers": [],
+ "layer_props": {
+  "stair": {
+   "location": "119,111"
+  }
+ }
+}

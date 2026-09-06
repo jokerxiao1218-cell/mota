@@ -1,0 +1,306 @@
+{
+ "floor": 28,
+ "tmx": "28.tmx",
+ "grid": [
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "npc",
+     "layer_id": 13,
+     "kind": "npc",
+     "sprite": "npc3_0",
+     "sprite_id": 3
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "up",
+     "sprite": "stair_up"
+    }
+   ],
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "down",
+     "sprite": "stair_down"
+    }
+   ]
+  ]
+ ],
+ "stairs": [
+  {
+   "dir": "up",
+   "x": 0,
+   "y": 10
+  },
+  {
+   "dir": "down",
+   "x": 10,
+   "y": 10
+  }
+ ],
+ "npcs": [
+  {
+   "npc": 20,
+   "x": 7,
+   "y": 3
+  }
+ ],
+ "triggers": [],
+ "layer_props": {
+  "stair": {
+   "location": "111,119"
+  },
+  "npc": {
+   "40": "20"
+  }
+ }
+}

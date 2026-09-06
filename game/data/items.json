@@ -1,0 +1,290 @@
+{
+ "1": {
+  "id": 1,
+  "name": "黄色钥匙",
+  "desc": "打开黄色的门。",
+  "type": 1,
+  "kind": "key",
+  "door": 1001
+ },
+ "2": {
+  "id": 2,
+  "name": "蓝色钥匙",
+  "desc": "打开蓝色的门。",
+  "type": 1,
+  "kind": "key",
+  "door": 1002
+ },
+ "3": {
+  "id": 3,
+  "name": "红色钥匙",
+  "desc": "打开红色的门。",
+  "type": 1,
+  "kind": "key",
+  "door": 1003
+ },
+ "4": {
+  "id": 4,
+  "name": "红血瓶",
+  "desc": "恢复50*level血量。",
+  "type": 2,
+  "kind": "potion",
+  "hp": 50,
+  "area_scale": true
+ },
+ "5": {
+  "id": 5,
+  "name": "蓝血瓶",
+  "desc": "恢复200*level血量。",
+  "type": 2,
+  "kind": "potion",
+  "hp": 200,
+  "area_scale": true
+ },
+ "6": {
+  "id": 6,
+  "name": "红宝石",
+  "desc": "提升1*level攻击力。",
+  "type": 3,
+  "kind": "gem",
+  "attack": 1,
+  "area_scale": true
+ },
+ "7": {
+  "id": 7,
+  "name": "蓝宝石",
+  "desc": "提升1*level防御力。",
+  "type": 4,
+  "kind": "gem",
+  "defence": 1,
+  "area_scale": true
+ },
+ "8": {
+  "id": 8,
+  "name": "铁剑",
+  "desc": "攻击+10。",
+  "type": 5,
+  "kind": "sword",
+  "attack": 10
+ },
+ "9": {
+  "id": 9,
+  "name": "银剑",
+  "desc": "攻击+20。",
+  "type": 5,
+  "kind": "sword",
+  "attack": 20
+ },
+ "10": {
+  "id": 10,
+  "name": "骑士剑",
+  "desc": "攻击+40。",
+  "type": 5,
+  "kind": "sword",
+  "attack": 40
+ },
+ "11": {
+  "id": 11,
+  "name": "圣剑",
+  "desc": "攻击+50。",
+  "type": 5,
+  "kind": "sword",
+  "attack": 50
+ },
+ "12": {
+  "id": 12,
+  "name": "神圣剑",
+  "desc": "攻击+100。",
+  "type": 5,
+  "kind": "sword",
+  "attack": 100
+ },
+ "13": {
+  "id": 13,
+  "name": "铁盾",
+  "desc": "防御+10。",
+  "type": 6,
+  "kind": "shield",
+  "defence": 10
+ },
+ "14": {
+  "id": 14,
+  "name": "银盾",
+  "desc": "防御+20。",
+  "type": 6,
+  "kind": "shield",
+  "defence": 20
+ },
+ "15": {
+  "id": 15,
+  "name": "骑士盾",
+  "desc": "防御+40。",
+  "type": 6,
+  "kind": "shield",
+  "defence": 40
+ },
+ "16": {
+  "id": 16,
+  "name": "圣盾",
+  "desc": "防御+50。",
+  "type": 6,
+  "kind": "shield",
+  "defence": 50
+ },
+ "17": {
+  "id": 17,
+  "name": "神圣盾",
+  "desc": "防御+100。",
+  "type": 6,
+  "kind": "shield",
+  "defence": 100
+ },
+ "18": {
+  "id": 18,
+  "name": "怪物手册",
+  "desc": "查看怪物能力、伤害，无限使用。",
+  "type": 7,
+  "kind": "tool",
+  "tool": "monster_manual",
+  "uses": 1
+ },
+ "19": {
+  "id": 19,
+  "name": "记事本",
+  "desc": "记录对话，无限使用。",
+  "type": 8,
+  "kind": "tool",
+  "tool": "notebook",
+  "uses": 1
+ },
+ "20": {
+  "id": 20,
+  "name": "飞行魔杖",
+  "desc": "在楼梯旁边才有效，可以在已经去过的楼层间进行楼层跳跃，不能去44楼。无限使用。",
+  "type": 9,
+  "kind": "tool",
+  "tool": "fly_wand",
+  "uses": null
+ },
+ "21": {
+  "id": 21,
+  "name": "镐",
+  "desc": "消除周围墙壁，一次性使用。",
+  "type": 10,
+  "kind": "tool",
+  "tool": "pickaxe",
+  "uses": 1
+ },
+ "22": {
+  "id": 22,
+  "name": "地震卷轴",
+  "desc": "摧毁一层楼所有墙，一次性使用。",
+  "type": 11,
+  "kind": "tool",
+  "tool": "quake_scroll",
+  "uses": 1
+ },
+ "23": {
+  "id": 23,
+  "name": "冰冻魔法",
+  "desc": "将熔岩冻为平地，无限使用。",
+  "type": 12,
+  "kind": "tool",
+  "tool": "ice_magic",
+  "uses": null
+ },
+ "24": {
+  "id": 24,
+  "name": "炸弹",
+  "desc": "炸毁周围敌人，对头目无效。",
+  "type": 13,
+  "kind": "tool",
+  "tool": "bomb",
+  "uses": 1
+ },
+ "25": {
+  "id": 25,
+  "name": "魔法钥匙",
+  "desc": "打开一层楼全部黄门。",
+  "type": 14,
+  "kind": "tool",
+  "tool": "magic_key",
+  "uses": 1
+ },
+ "26": {
+  "id": 26,
+  "name": "圣水",
+  "desc": "按攻击力、防御力增加生命值，一次性使用。",
+  "type": 15,
+  "kind": "tool",
+  "tool": "holy_water",
+  "uses": 1
+ },
+ "27": {
+  "id": 27,
+  "name": "幸运金币",
+  "desc": "打败敌人获得双倍金钱。",
+  "type": 16,
+  "kind": "tool",
+  "tool": "lucky_coin",
+  "uses": 1,
+  "gold_multiplier": 2
+ },
+ "28": {
+  "id": 28,
+  "name": "十字架",
+  "desc": "和兽人、兽人武士、吸血鬼战斗攻击力倍增。",
+  "type": 17,
+  "kind": "tool",
+  "tool": "cross",
+  "uses": 1,
+  "attack_multiplier": 2,
+  "affects": [
+   111,
+   112,
+   115
+  ]
+ },
+ "29": {
+  "id": 29,
+  "name": "屠龙匕",
+  "desc": "和魔龙战斗攻击力倍增。",
+  "type": 18,
+  "kind": "tool",
+  "tool": "dragon_slayer",
+  "uses": 1,
+  "attack_multiplier": 2,
+  "affects": [
+   122
+  ]
+ },
+ "30": {
+  "id": 30,
+  "name": "向上飞行器",
+  "desc": "去上一层楼。",
+  "type": 19,
+  "kind": "tool",
+  "tool": "wing",
+  "uses": 1,
+  "floor_delta": 1
+ },
+ "31": {
+  "id": 31,
+  "name": "向下飞行器",
+  "desc": "去下一层楼。",
+  "type": 19,
+  "kind": "tool",
+  "tool": "wing",
+  "uses": 1,
+  "floor_delta": -1
+ },
+ "32": {
+  "id": 32,
+  "name": "中心飞行器",
+  "desc": "飞到该层楼中心对称的位置，此位置必须是空地。限3次使用。",
+  "type": 20,
+  "kind": "tool",
+  "tool": "center_wing",
+  "uses": 3
+ }
+}

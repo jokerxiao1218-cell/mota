@@ -1,0 +1,801 @@
+{
+ "floor": 34,
+ "tmx": "34.tmx",
+ "grid": [
+  [
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "down",
+     "sprite": "stair_down"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 4,
+     "sprite": "prop4"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 1,
+     "sprite": "prop1"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 1,
+     "sprite": "prop1"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 1,
+     "sprite": "prop1"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 7,
+     "sprite": "prop7"
+    }
+   ]
+  ],
+  [
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "119_0",
+     "id": 119
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "123_0",
+     "id": 123
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 1,
+     "sprite": "prop1"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 4,
+     "sprite": "prop4"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "119_0",
+     "id": 119
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "100_0",
+     "id": 100
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "121_0",
+     "id": 121
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "108_0",
+     "id": 108
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "118_0",
+     "id": 118
+    }
+   ]
+  ],
+  [
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ]
+  ],
+  [
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  [
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "117_0",
+     "id": 117
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "101_0",
+     "id": 101
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "123_0",
+     "id": 123
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "102_0",
+     "id": 102
+    }
+   ]
+  ],
+  [
+   null,
+   null,
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "117_0",
+     "id": 117
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "121_0",
+     "id": 121
+    }
+   ],
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   null,
+   null,
+   null,
+   [
+    {
+     "layer": "door",
+     "layer_id": 3,
+     "kind": "door",
+     "id": 1001,
+     "sprite": "door1001_0"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "118_0",
+     "id": 118
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 4,
+     "sprite": "prop4"
+    }
+   ]
+  ],
+  [
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 5,
+     "sprite": "prop5"
+    }
+   ],
+   [
+    {
+     "layer": "monster",
+     "layer_id": 5,
+     "kind": "monster",
+     "sprite": "118_0",
+     "id": 118
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "stair",
+     "layer_id": 9,
+     "kind": "stair",
+     "dir": "up",
+     "sprite": "stair_up"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "wall",
+     "layer_id": 1,
+     "kind": "wall",
+     "sprite": "door1006_0"
+    }
+   ],
+   null,
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 1,
+     "sprite": "prop1"
+    }
+   ],
+   [
+    {
+     "layer": "prop",
+     "layer_id": 4,
+     "kind": "prop",
+     "id": 6,
+     "sprite": "prop6"
+    }
+   ]
+  ]
+ ],
+ "stairs": [
+  {
+   "dir": "down",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "dir": "up",
+   "x": 5,
+   "y": 10
+  }
+ ],
+ "npcs": [],
+ "triggers": [],
+ "layer_props": {
+  "stair": {
+   "location": "104,1"
+  },
+  "monster": {
+   "monsterEvent": "14:37,39,41,43,81,83,85,87"
+  }
+ }
+}

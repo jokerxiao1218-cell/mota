@@ -1,0 +1,4323 @@
+{
+ "1": {
+  "id": 1,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         70,
+         132
+        ]
+       ]
+      },
+      "interval": 0.6,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         91,
+         130
+        ],
+        [
+         81,
+         130
+        ],
+        [
+         93,
+         130
+        ],
+        [
+         103,
+         130
+        ]
+       ]
+      },
+      "interval": 0.6,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "sound",
+    "data": [
+     "level3Event"
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "魔王Zero说：欢迎来到魔塔，你是第一百位挑战者。你若能打败我所有的手下，我就与你一对一的决斗。现在你必须接受我的安排。",
+     "什么？",
+     [
+      "------",
+      "------喂！",
+      "------喂！醒醒！"
+     ]
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         70,
+         132
+        ]
+       ]
+      },
+      "interval": 0.6,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         91,
+         130
+        ],
+        [
+         81,
+         130
+        ],
+        [
+         93,
+         130
+        ],
+        [
+         103,
+         130
+        ]
+       ]
+      },
+      "interval": 0.6,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "魔王Zero说：欢迎来到魔塔，你是第一百位挑战者。你若能打败我所有的手下，我就与你一对一的决斗。现在你必须接受我的安排。",
+     "什么？",
+     [
+      "------",
+      "------喂！",
+      "------喂！醒醒！"
+     ]
+    ]
+   },
+   {
+    "type": "beAttack",
+    "data": {
+     "hero": [
+      91,
+      81,
+      93,
+      103
+     ]
+    }
+   },
+   {
+    "type": "sceneDisappear",
+    "data": true
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       92
+      ],
+      "monster": [
+       81,
+       91,
+       93,
+       103,
+       70
+      ]
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "魔王Zero说：欢迎来到魔塔，你是第一百位挑战者。你若能打败我所有的手下，我就与你一对一的决斗。现在你必须接受我的安排。",
+     "什么？",
+     [
+      "------",
+      "------喂！",
+      "------喂！醒醒！"
+     ]
+    ]
+   },
+   {
+    "type": "sceneAppear",
+    "data": [
+     2,
+     79
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "2": {
+  "id": 2,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "chat",
+    "data": [
+     "哈哈哈，你是如此的幸运能安全到达这里。但现在好运离你而去了，你中埋伏了，弟兄们给我上。"
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "wall": [
+       59,
+       61
+      ]
+     },
+     {
+      "event": [
+       49
+      ]
+     }
+    ]
+   },
+   {
+    "type": "sound",
+    "data": [
+     "skeleton",
+     "true"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         38,
+         5
+        ],
+        [
+         0,
+         42,
+         38
+        ],
+        [
+         0,
+         34,
+         60
+        ],
+        [
+         1,
+         24,
+         59
+        ],
+        [
+         1.5,
+         23,
+         48
+        ],
+        [
+         2,
+         22,
+         37
+        ],
+        [
+         1,
+         30,
+         61
+        ],
+        [
+         1.5,
+         31,
+         50
+        ],
+        [
+         2,
+         32,
+         39
+        ]
+       ]
+      },
+      "interval": 0,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "door": [
+        [
+         71,
+         1004
+        ],
+        [
+         27,
+         1004
+        ],
+        [
+         36,
+         1004
+        ],
+        [
+         40,
+         1004
+        ]
+       ]
+      },
+      "interval": 5,
+      "delay": [
+       0,
+       1,
+       4.5,
+       4.5
+      ]
+     }
+    ]
+   },
+   {
+    "type": "stopSound",
+    "data": null
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "wall": [
+       59,
+       61
+      ]
+     },
+     {
+      "event": [
+       49
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {
+   "monsterDoor": {
+    "5": [
+     36,
+     40,
+     71
+    ],
+    "37,38,39,48,50,59,60,61": [
+     27
+    ]
+   }
+  }
+ },
+ "3": {
+  "id": 3,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "chat",
+    "data": [
+     "你怎能杀出重围？我是绝不会让你通过的，来吧，我要与你决斗！"
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       16
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "4": {
+  "id": 4,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "chat",
+    "data": [
+     "不，这是不可能的，你怎会打败我！你别太得意，后面还有许多强大的对手和机关存在，你稍有疏忽就必死无疑。"
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "event": [
+        [
+         93,
+         5
+        ]
+       ],
+       "prop": [
+        [
+         22,
+         6
+        ],
+        [
+         23,
+         6
+        ],
+        [
+         24,
+         6
+        ],
+        [
+         30,
+         7
+        ],
+        [
+         31,
+         7
+        ],
+        [
+         32,
+         7
+        ],
+        [
+         33,
+         5
+        ],
+        [
+         34,
+         5
+        ],
+        [
+         35,
+         5
+        ],
+        [
+         41,
+         1
+        ],
+        [
+         42,
+         1
+        ],
+        [
+         43,
+         1
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "show",
+    "data": 115
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "door": [
+       36,
+       40,
+       71
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "5": {
+  "id": 5,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "npc": [
+        [
+         110,
+         9
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "npc": [
+        [
+         0,
+         110,
+         104
+        ]
+       ]
+      },
+      "interval": 12,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       93
+      ]
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 104
+   }
+  ],
+  "meta": {}
+ },
+ "6": {
+  "id": 6,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       82
+      ]
+     }
+    ]
+   },
+   {
+    "type": "sound",
+    "data": [
+     "vampire"
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "door": [
+        [
+         93,
+         1004
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         115
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "specialMove",
+    "data": {
+     "type": "spawn",
+     "move": {
+      "from": [
+       48,
+       49,
+       50,
+       59,
+       61,
+       70,
+       71,
+       72
+      ],
+      "to": 60
+     },
+     "fadeOut": true,
+     "interval": 8
+    }
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "door": [
+        [
+         93,
+         1004
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         115
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "很好，你打败了骷髅族，但别想象藐视骷髅人那样藐视我。我对于你就像是神一样，是不可战胜的。呵呵，来吧！"
+    ]
+   }
+  ],
+  "meta": {
+   "monsterDoor": {
+    "60": [
+     93,
+     27
+    ]
+   }
+  }
+ },
+ "7": {
+  "id": 7,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "chat",
+    "data": [
+     "上帝啊！我做梦也没想到我会被人打败，毫无疑问你是比我强。但以你现在的状态对于大法师来说又太弱了，你仅仅取得了一个暂时的胜利。"
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "prop": [
+        [
+         47,
+         6
+        ],
+        [
+         58,
+         6
+        ],
+        [
+         69,
+         6
+        ],
+        [
+         51,
+         7
+        ],
+        [
+         62,
+         7
+        ],
+        [
+         73,
+         7
+        ],
+        [
+         81,
+         5
+        ],
+        [
+         82,
+         5
+        ],
+        [
+         83,
+         5
+        ],
+        [
+         37,
+         1
+        ],
+        [
+         38,
+         1
+        ],
+        [
+         39,
+         1
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "8": {
+  "id": 8,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "clearNpcEvent",
+    "data": 16
+   }
+  ],
+  "meta": {
+   "save": 29
+  }
+ },
+ "9": {
+  "id": 9,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "npc": [
+        [
+         119,
+         22
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {
+   "save": 2
+  }
+ },
+ "10": {
+  "id": 10,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "npc": [
+        [
+         103,
+         26
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "wall": [
+       91
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {
+   "save": 35
+  }
+ },
+ "11": {
+  "id": 11,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       104
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         10,
+         135
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         10,
+         5
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         104
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "你打败了前两个区域的头目，这表明你是个勇士。但现在游戏结束了，我将在这里亲手杀死你！"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         10,
+         5
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         104
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 104
+   }
+  ],
+  "meta": {}
+ },
+ "12": {
+  "id": 12,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         93,
+         135
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "你以为你已非常强大了吗？嘿嘿错了，只是我今天状态不佳而已。我走了，有本事到40楼与我在打一次。"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         93,
+         10
+        ]
+       ]
+      },
+      "interval": 13,
+      "speed": 0.5
+     }
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "monster": [
+       10
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "13": {
+  "id": 13,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       53
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "door": [
+        [
+         42,
+         1004
+        ],
+        [
+         86,
+         1004
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {
+   "monsterDoor": {
+    "52,54,74,76": [
+     42,
+     86
+    ]
+   }
+  }
+ },
+ "14": {
+  "id": 14,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "wall": [
+       56
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "prop": [
+        [
+         44,
+         1
+        ],
+        [
+         46,
+         1
+        ],
+        [
+         66,
+         1
+        ],
+        [
+         68,
+         1
+        ],
+        [
+         56,
+         3
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "15": {
+  "id": 15,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       56
+      ]
+     }
+    ]
+   },
+   {
+    "type": "show",
+    "data": 45
+   }
+  ],
+  "meta": {}
+ },
+ "16": {
+  "id": 16,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "door": [
+       36
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "prop": [
+        [
+         36,
+         32
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "17": {
+  "id": 17,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       71
+      ]
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "我还在担心你不能来了，我确信这次我一定能杀了你。鬼战士给我上！",
+     "哼，没关系，士兵们给我上！",
+     "真正的战斗才刚开始，让我们继续，双手剑士给我上！",
+     "哼，你们这战怎么打的？骑士们给我冲！",
+     "你怎会击败我所有的手下？我和你势不两立，我绝不认输。（骑士队长失去了理智）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "chat",
+    "data": [
+     "我还在担心你不能来了，我确信这次我一定能杀了你。鬼战士给我上！",
+     "哼，没关系，士兵们给我上！",
+     "真正的战斗才刚开始，让我们继续，双手剑士给我上！",
+     "哼，你们这战怎么打的？骑士们给我冲！",
+     "你怎会击败我所有的手下？我和你势不两立，我绝不认输。（骑士队长失去了理智）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "chat",
+    "data": [
+     "我还在担心你不能来了，我确信这次我一定能杀了你。鬼战士给我上！",
+     "哼，没关系，士兵们给我上！",
+     "真正的战斗才刚开始，让我们继续，双手剑士给我上！",
+     "哼，你们这战怎么打的？骑士们给我冲！",
+     "你怎会击败我所有的手下？我和你势不两立，我绝不认输。（骑士队长失去了理智）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "chat",
+    "data": [
+     "我还在担心你不能来了，我确信这次我一定能杀了你。鬼战士给我上！",
+     "哼，没关系，士兵们给我上！",
+     "真正的战斗才刚开始，让我们继续，双手剑士给我上！",
+     "哼，你们这战怎么打的？骑士们给我冲！",
+     "你怎会击败我所有的手下？我和你势不两立，我绝不认输。（骑士队长失去了理智）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   },
+   {
+    "type": "chat",
+    "data": [
+     "我还在担心你不能来了，我确信这次我一定能杀了你。鬼战士给我上！",
+     "哼，没关系，士兵们给我上！",
+     "真正的战斗才刚开始，让我们继续，双手剑士给我上！",
+     "哼，你们这战怎么打的？骑士们给我冲！",
+     "你怎会击败我所有的手下？我和你势不两立，我绝不认输。（骑士队长失去了理智）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         37,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         36,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         35,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         39,
+         71
+        ]
+       ]
+      },
+      "interval": 4,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         40,
+         71
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         41,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         14,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         13,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         12,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         18,
+         71
+        ]
+       ]
+      },
+      "interval": 7,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         19,
+         71
+        ]
+       ]
+      },
+      "interval": 8,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         20,
+         71
+        ]
+       ]
+      },
+      "interval": 9,
+      "speed": 1
+     },
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         5,
+         71
+        ]
+       ]
+      },
+      "interval": 6,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "do",
+    "data": 71
+   }
+  ],
+  "meta": {}
+ },
+ "18": {
+  "id": 18,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "show",
+    "data": 5
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         124
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "prop": [
+        [
+         18,
+         6
+        ],
+        [
+         19,
+         6
+        ],
+        [
+         20,
+         6
+        ],
+        [
+         39,
+         7
+        ],
+        [
+         40,
+         7
+        ],
+        [
+         41,
+         7
+        ],
+        [
+         35,
+         5
+        ],
+        [
+         36,
+         5
+        ],
+        [
+         37,
+         5
+        ],
+        [
+         12,
+         1
+        ],
+        [
+         13,
+         1
+        ],
+        [
+         14,
+         1
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "这次先饶了你，下次碰到我会和你正式的决斗，你最好投降。（骑士队长逃走了）"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         60,
+         5
+        ]
+       ]
+      },
+      "interval": 5,
+      "speed": 0.5
+     }
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "monster": [
+       5
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         124
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "prop": [
+        [
+         18,
+         6
+        ],
+        [
+         19,
+         6
+        ],
+        [
+         20,
+         6
+        ],
+        [
+         39,
+         7
+        ],
+        [
+         40,
+         7
+        ],
+        [
+         41,
+         7
+        ],
+        [
+         35,
+         5
+        ],
+        [
+         36,
+         5
+        ],
+        [
+         37,
+         5
+        ],
+        [
+         12,
+         1
+        ],
+        [
+         13,
+         1
+        ],
+        [
+         14,
+         1
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "19": {
+  "id": 19,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       103
+      ]
+     },
+     {
+      "monster": [
+       71,
+       81,
+       83,
+       93,
+       82
+      ]
+     },
+     {
+      "monster": [
+       60
+      ]
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "move",
+    "data": [
+     {
+      "path": {
+       "monster": [
+        [
+         0,
+         104,
+         82
+        ]
+       ]
+      },
+      "interval": 2,
+      "speed": 1
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         132
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         71,
+         130
+        ],
+        [
+         81,
+         130
+        ],
+        [
+         83,
+         130
+        ],
+        [
+         93,
+         130
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         60,
+         132
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         71,
+         130
+        ],
+        [
+         81,
+         130
+        ],
+        [
+         83,
+         130
+        ],
+        [
+         93,
+         130
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "beAttack",
+    "data": {
+     "monster": 82
+    }
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       103
+      ]
+     },
+     {
+      "monster": [
+       71,
+       81,
+       83,
+       93,
+       82
+      ]
+     },
+     {
+      "monster": [
+       60
+      ]
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "骑士队长说：“啊！又是你！！”（转身逃跑）",
+     "魔王说：“你敢临阵脱逃！”",
+     "骑士队长说：“哦，大王，我打不过这个勇士，不得不逃，饶了我吧？”",
+     "魔王说：“你说什么？你敢再说一次！你像个胆小鬼一样逃离你负责的区域，并说出那样的话。魔塔不需要像你这样的败类，来人给我杀了。”",
+     "骑士队长说：“魔王，饶了我吧，再给我一次机会啊。。。。”",
+     "魔王说：“虽然我刚才态度异常，但别担心在决斗时，我会像刚才这个无用的家伙让手下一拥而上。我期待与你的决斗。”"
+    ]
+   },
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       103
+      ]
+     },
+     {
+      "monster": [
+       71,
+       81,
+       83,
+       93,
+       82
+      ]
+     },
+     {
+      "monster": [
+       60
+      ]
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "20": {
+  "id": 20,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       60
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         27,
+         132
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         15,
+         130
+        ],
+        [
+         16,
+         130
+        ],
+        [
+         17,
+         130
+        ],
+        [
+         26,
+         130
+        ],
+        [
+         28,
+         130
+        ],
+        [
+         37,
+         130
+        ],
+        [
+         38,
+         130
+        ],
+        [
+         39,
+         130
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "你终于来了，我很想与你立刻决斗，但我的部下不同意。"
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         27,
+         132
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     },
+     {
+      "layer": {
+       "monster": [
+        [
+         15,
+         130
+        ],
+        [
+         16,
+         130
+        ],
+        [
+         17,
+         130
+        ],
+        [
+         26,
+         130
+        ],
+        [
+         28,
+         130
+        ],
+        [
+         37,
+         130
+        ],
+        [
+         38,
+         130
+        ],
+        [
+         39,
+         130
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "21": {
+  "id": 21,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "chat",
+    "data": [
+     "啊！我怎么被封印了，我只剩下一成的功力了！！！"
+    ]
+   },
+   {
+    "type": "weak",
+    "data": [
+     27,
+     0.1
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "22": {
+  "id": 22,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "monster": [
+       15,
+       16,
+       17,
+       26,
+       28,
+       37,
+       38,
+       39
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "prop": [
+        [
+         34,
+         6
+        ],
+        [
+         35,
+         6
+        ],
+        [
+         36,
+         6
+        ],
+        [
+         40,
+         7
+        ],
+        [
+         41,
+         7
+        ],
+        [
+         42,
+         7
+        ],
+        [
+         48,
+         5
+        ],
+        [
+         49,
+         5
+        ],
+        [
+         50,
+         5
+        ],
+        [
+         15,
+         3
+        ],
+        [
+         17,
+         29
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "哈哈哈，很好，你是个合格的战士。"
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "23": {
+  "id": 23,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "event": [
+       93
+      ]
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     "-杀-死-入-侵-者-"
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "24": {
+  "id": 24,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "prop": [
+        [
+         80,
+         3
+        ],
+        [
+         81,
+         3
+        ],
+        [
+         83,
+         3
+        ],
+        [
+         84,
+         3
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "25": {
+  "id": 25,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "npc": [
+       49
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "monster": [
+        [
+         49,
+         133
+        ]
+       ]
+      },
+      "interval": 0.5,
+      "delay": null
+     }
+    ]
+   },
+   {
+    "type": "chat",
+    "data": [
+     [
+      "勇者问：“啊！你就是魔王！你怎么还活着？”",
+      "魔王回答：“我是不会死的。”以前我只是对你的能力做测试而已。",
+      "勇者问：“什么？你这是什么意思？你为什么要做这样的事情？”",
+      "魔王回答：“神圣剑就是你装备的武器，智慧权杖是我所装备的武器。先知说过无论谁使用他们都必须要有足够的智慧，且剑只能被真正的战士使用。”",
+      "勇者问：“如你所说，我就是那个战士。”",
+      "魔王回答：“是的，你是最合适的人选。但你刚到魔塔时，你的能力还不足以支配神圣剑。因此我在塔内安排了各类机关，让你通过战斗直到可以控制神圣剑。”",
+      "勇者问：“很好，那么外面传说有一个公主被困在魔塔，就是为了把我骗到这里。是这样的吗？”",
+      "魔王回答：“是的，现在如果我们能够合作，那么这场闹剧就结束了。现在让我们一起用权杖破坏神圣剑，这样伟大的时代就要降临了。”",
+      "勇者问：“我不会让你毁了神圣剑，让黑暗降临。"
+     ]
+    ]
+   }
+  ],
+  "meta": {}
+ },
+ "26": {
+  "id": 26,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "disappear",
+    "data": [
+     {
+      "wall": [
+       16,
+       27,
+       38
+      ]
+     }
+    ]
+   },
+   {
+    "type": "appear",
+    "data": [
+     {
+      "layer": {
+       "wall": [
+        [
+         4,
+         0
+        ],
+        [
+         6,
+         0
+        ]
+       ],
+       "event": [
+        [
+         5,
+         27
+        ]
+       ]
+      },
+      "interval": 0,
+      "delay": null
+     }
+    ]
+   }
+  ],
+  "meta": {
+   "save": 24
+  }
+ },
+ "27": {
+  "id": 27,
+  "trigger": null,
+  "actions": [
+   {
+    "type": "jump",
+    "data": [
+     50,
+     5,
+     5
+    ]
+   }
+  ],
+  "meta": {}
+ }
+}

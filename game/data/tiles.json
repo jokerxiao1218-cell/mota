@@ -1,0 +1,76 @@
+{
+ "kinds": {
+  "floor": {
+   "walkable": true
+  },
+  "wall": {
+   "walkable": false
+  },
+  "lava": {
+   "walkable": false,
+   "freezable": true
+  },
+  "door": {
+   "walkable": false
+  },
+  "stair": {
+   "walkable": true
+  },
+  "monster": {
+   "walkable": false
+  },
+  "prop": {
+   "walkable": true
+  },
+  "npc": {
+   "walkable": false
+  },
+  "star": {
+   "walkable": true
+  },
+  "big_part": {
+   "walkable": false
+  },
+  "unknown": {
+   "walkable": false
+  }
+ },
+ "doors": {
+  "1001": {
+   "id": 1001,
+   "name": "黄门",
+   "sprite": "door1001",
+   "opens_with_key": 1
+  },
+  "1002": {
+   "id": 1002,
+   "name": "紫门",
+   "sprite": "door1002",
+   "opens_with_key": 2
+  },
+  "1003": {
+   "id": 1003,
+   "name": "红门",
+   "sprite": "door1003",
+   "opens_with_key": 3
+  },
+  "1004": {
+   "id": 1004,
+   "name": "监狱门",
+   "sprite": "door1004",
+   "opens_by": "event"
+  },
+  "1005": {
+   "id": 1005,
+   "name": "怪物门",
+   "sprite": "door1005",
+   "opens_by": "event"
+  },
+  "1006": {
+   "id": 1006,
+   "name": "墙门",
+   "sprite": "door1006",
+   "opens_by": "event"
+  }
+ }
+}
