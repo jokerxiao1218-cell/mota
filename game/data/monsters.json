@@ -130,7 +130,7 @@
   "boss": false,
   "event": null,
   "special": {
-   "_raw_extra_damage": 28
+   "counter_item": 28
   }
  },
  "112": {
@@ -143,7 +143,7 @@
   "boss": false,
   "event": null,
   "special": {
-   "_raw_extra_damage": 28
+   "counter_item": 28
   }
  },
  "113": {
@@ -189,7 +189,7 @@
   "boss": false,
   "event": 7,
   "special": {
-   "_raw_extra_damage": 28
+   "counter_item": 28
   }
  },
  "116": {
@@ -278,7 +278,7 @@
     -22,
     -21
    ],
-   "_raw_extra_damage": 29
+   "counter_item": 29
   }
  },
  "123": {

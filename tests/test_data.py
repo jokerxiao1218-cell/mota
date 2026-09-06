@@ -69,7 +69,7 @@ def test_monsters_authoritative(data):
 
 
 def test_monster_specials(data):
-    """特殊能力 = 命名字段(设计 §4.2 选择5);3 处金币校正生效。"""
+    """特殊能力 = 命名字段(设计 §4.2 选择5);3 处金币校正生效;克制道具 id。"""
     mons = data["monsters"]
     assert mons["125"]["special"]["adjacent_damage"] == 100   # 初级巫师
     assert mons["126"]["special"]["adjacent_damage"] == 200   # 高级巫师
@@ -78,6 +78,10 @@ def test_monster_specials(data):
         and mons["120"]["gold"] == 100                        # 3 处校正
     assert mons["116"]["boss"] is True                        # 大法师
     assert mons["132"]["event"] == 22 and mons["133"]["event"] is None
+    # extraDamage 实为克制道具 id(考古终审):28=十字架、29=屠龙匕
+    assert mons["111"]["special"]["counter_item"] == 28       # 兽人
+    assert mons["115"]["special"]["counter_item"] == 28       # 吸血鬼
+    assert mons["122"]["special"]["counter_item"] == 29       # 魔龙
 
 
 def test_items(data):
@@ -101,8 +105,10 @@ def test_doors_and_kinds(data):
     assert doors["1001"]["opens_with_key"] == 1
     assert doors["1002"]["opens_with_key"] == 2
     assert doors["1003"]["opens_with_key"] == 3
-    for did in ("1004", "1005", "1006"):                                 # 监狱/怪物/墙门
-        assert doors[did]["opens_by"] == "event"
+    # 考古终审:1004 事件门 / 1005 杀守卫门 / 1006 墙门(撞开)
+    assert doors["1004"]["opens_by"] == "event"
+    assert doors["1005"]["opens_by"] == "kill_guards"
+    assert doors["1006"]["opens_by"] == "bump"
     for kind, meta in data["tiles"]["kinds"].items():
         assert isinstance(meta["walkable"], bool)
 
@@ -141,6 +147,33 @@ def test_floors(data):
                     elif cell["kind"] == "door":
                         assert str(cell["id"]) in data["tiles"]["doors"]
     assert has_stack, "存在同格叠放(墙门下藏道具等)是原版机制,数据里应能找到"
+
+
+def test_semantic_wiring(data):
+    """考古终审接线字段:楼梯落点/祭坛/守卫门/杀怪触发/先攻位置。"""
+    floors = data["floors"]
+    # 祭坛只有 4 层(4/12/32/46)
+    altar_floors = {fno for fno, fl in floors.items()
+                    if any(any(c["kind"] == "altar" for c in st)
+                           for row in fl["grid"] for st in row if st)}
+    assert altar_floors == {"4", "12", "32", "46"}, altar_floors
+    # 43 层上梯跨 2 层(43→45 绕过 44 层),45 层下梯 -2
+    assert floors["43"]["stair_links"]["up_diff"] == 2
+    assert floors["45"]["stair_links"]["down_diff"] == -2
+    assert floors["2"]["stair_links"]["up_stand"] == [0, 9]   # location '99,11'
+    # 49 层封印阵:事件21(杀16,26,28,38 且 15,17,37,39 存活)+ 事件22(杀@27 假魔王)
+    kt49 = {kt["event"]: kt for kt in floors["49"]["kill_triggers"]}
+    assert kt49[21]["kill"] == [[5, 1], [4, 2], [6, 2], [5, 3]]       # 16,26,28,38
+    assert kt49[21]["keep_alive"] == [[4, 1], [6, 1], [4, 3], [6, 3]]  # 15,17,37,39
+    assert kt49[22]["kill"] == [[5, 2]]                                # 27
+    # 34 层杀 8 守卫开宝库
+    kt34 = {kt["event"]: kt for kt in floors["34"]["kill_triggers"]}
+    assert len(kt34[14]["kill"]) == 8
+    # 40 层先攻怪 12 只(数据保留,暂未启用)
+    assert len(floors["40"]["first_attack"]) == 12
+    # 事件4 的 show 15 勘误为 115(10 层隐藏楼梯)
+    show_acts = [a for a in data["events"]["4"]["actions"] if a["type"] == "show"]
+    assert show_acts and all(a["data"] == 115 for a in show_acts)
 
 
 def test_floor_wiring(data):

@@ -109,9 +109,10 @@ def convert_monsters():
             special["adjacent_damage"] = int(magic)  # 巫师:相邻格固定魔伤(可叠加)
             special["unfightable"] = True            # TODO(语义报告):确认是否绝对不可正面战斗
         if mon.get("big"):
-            special["big"] = mon["big"]              # 3×3 大怪格偏移;摆法/战斗语义见报告
+            special["big"] = mon["big"]              # 3×3 大怪格偏移(元素格=贴图格+1行,考古终审)
         if mon.get("extraDamage") is not None:
-            special["_raw_extra_damage"] = mon["extraDamage"]  # tacthgin 原始字段,语义待报告确认
+            # 考古终审:extraDamage 实为【克制道具 id】(28=十字架,29=屠龙匕),不是伤害数值
+            special["counter_item"] = mon["extraDamage"]
         out[k] = {
             "id": mid, "name": mon["name"],
             "hp": mon["hp"], "attack": mon["attack"], "defence": mon["defence"],
@@ -171,7 +172,9 @@ def convert_items():
 # ============================================================
 # 4. 门表 + 图块登记(tiles.json)
 # ============================================================
-DOOR_KEYS = {1001: 1, 1002: 2, 1003: 3}  # 黄/蓝/红门 ← 钥匙道具 id
+DOOR_KEYS = {1001: 1, 1002: 2, 1003: 3}        # 黄/蓝/红门 ← 钥匙道具 id
+DOOR_OPEN = {1004: "event", 1005: "kill_guards", 1006: "bump"}
+# 考古终审:1004 事件生成的监狱门;1005 静态杀守卫门;1006 墙门(直接撞开)
 
 KINDS = {
     "floor":     {"walkable": True},
@@ -183,6 +186,7 @@ KINDS = {
     "prop":      {"walkable": True},    # 撞上拾取后可通过
     "npc":       {"walkable": False},
     "star":      {"walkable": True},
+    "altar":     {"walkable": False},   # 祭坛:撞上开商店(4/12/32/46 层)
     "big_part":  {"walkable": False},
     "unknown":   {"walkable": False},   # 未解码内容:先按不可通行,转换时打印
 }
@@ -197,7 +201,7 @@ def convert_doors():
         if did in DOOR_KEYS:
             ent["opens_with_key"] = DOOR_KEYS[did]
         else:
-            ent["opens_by"] = "event"    # 监狱门 / 怪物门 / 墙门:剧情或机关打开
+            ent["opens_by"] = DOOR_OPEN[did]
         out[k] = ent
     return out
 
@@ -239,6 +243,11 @@ def convert_events():
                 if f not in used and f not in ("id", "step") and e[f] is not None}
         out[k] = {"id": int(k), "trigger": TRIGGERS.get(int(k)),
                   "actions": actions, "meta": meta}
+    # 考古终审勘误:事件4 的 show 15 是 115 的笔误(10 层隐藏上行楼梯@115;
+    # 原值导致"show not exist"报错、楼梯永远显不出来)——转换时直接修正
+    for act in out.get("4", {}).get("actions", []):
+        if act["type"] == "show" and act["data"] == 15:
+            act["data"] = 115
     return out
 
 
@@ -253,7 +262,11 @@ def cell_from(layer_name, gid, gid_map):
     if layer_name == "wall":
         if info["kind"] == "lava":
             return {"kind": "lava", "sprite": sprite}
-        return {"kind": "wall", "sprite": sprite}
+        return {"kind": "wall", "sprite": sprite}   # 含 pb_l/pb_r 祭坛两侧装饰墙
+    if layer_name == "building":
+        if info["kind"] == "big_part":
+            return {"kind": "altar", "sprite": sprite}  # 祭坛(pb_m 贴图,撞上开商店)
+        return {"kind": info["kind"], "sprite": sprite}
     if layer_name == "door":
         return {"kind": "door", "id": info.get("id"), "sprite": sprite}
     if layer_name == "stair":
@@ -281,6 +294,17 @@ def cell_from(layer_name, gid, gid_map):
 def _pos_to_xy(p):
     p = int(p)
     return {"x": p % 11, "y": p // 11}
+
+
+def _flat_pos(p):
+    """一维展平索引 -> [x, y](x=p%11 向右,y=p//11 向下)"""
+    p = int(p)
+    return [p % 11, p // 11]
+
+
+def _flat_list(s):
+    """'12,34,56' -> [[x,y], ...]"""
+    return [_flat_pos(p) for p in str(s).split(",") if p.strip()]
 
 
 def convert_floor(tmx_path, gid_map):
@@ -331,7 +355,44 @@ def convert_floor(tmx_path, gid_map):
     for k, v in layer_props.get("event", {}).items():
         if k.isdigit():
             triggers.append({"x": int(k) % 11, "y": int(k) // 11, "event": int(v)})
-    return grid, stairs, npcs, triggers, layer_props, stack_count
+    # ---- 楼梯落点:stair 层 location = [上行站位, 下行站位, 上行层差(默认+1), 下行层差(默认-1)];
+    #      踩梯→新层=当前层+diff;上楼落到【新层 down_stand】、下楼落到【新层 up_stand】(对面梯站位) ----
+    stair_links = {}
+    loc = layer_props.get("stair", {}).get("location")
+    if loc:
+        parts = [int(v) for v in loc.split(",")]
+        stair_links = {   # f0 地下室只有上行梯,location 仅 1 值
+            "up_stand": _flat_pos(parts[0]),
+            "down_stand": _flat_pos(parts[1]) if len(parts) > 1 else None,
+            "up_diff": parts[2] if len(parts) > 2 else 1,
+            "down_diff": parts[3] if len(parts) > 3 else -1,
+        }
+    # ---- 杀守卫开门:door 层属性 {'门位置列表': '守卫位置列表'}(杀光守卫→门全开) ----
+    guard_doors = []
+    for k, v in layer_props.get("door", {}).items():
+        if k.replace(",", "").isdigit():
+            guard_doors.append({"doors": _flat_list(k), "guards": _flat_list(v)})
+    # ---- 杀怪触发:monster 层属性 monsterEvent="事件:须杀光位置" /
+    #      disappearMonsterEvent="事件:须杀光位置:须存活位置"(先杀存活列表任一→永久取消) ----
+    kill_triggers = []
+    mprops = layer_props.get("monster", {})
+    if mprops.get("monsterEvent"):
+        ev, positions = mprops["monsterEvent"].split(":", 1)
+        kill_triggers.append({"event": int(ev), "kill": _flat_list(positions)})
+    if mprops.get("disappearMonsterEvent"):
+        ev, rest = mprops["disappearMonsterEvent"].split(":", 1)
+        kill_s, keep_s = rest.split(":", 1)
+        kill_triggers.append({"event": int(ev), "kill": _flat_list(kill_s),
+                              "keep_alive": _flat_list(keep_s)})
+    # ---- 先攻怪位置(40层大屠杀 12 只;用户已确认暂不启用,数据先保留) ----
+    first_attack = _flat_list(mprops["firstAttack"]) if mprops.get("firstAttack") else []
+    wiring = {
+        "stair_links": stair_links,
+        "guard_doors": guard_doors,
+        "kill_triggers": kill_triggers,
+        "first_attack": first_attack,
+    }
+    return grid, stairs, npcs, triggers, layer_props, stack_count, wiring
 
 
 def convert_floors(gid_map):
@@ -339,16 +400,20 @@ def convert_floors(gid_map):
         old.unlink()
     summary, total_stacks, unknowns = [], 0, []
     for tmx in sorted(REF.glob("TiledMap/*.tmx"), key=lambda p: int(p.stem)):
-        grid, stairs, npcs, triggers, layer_props, stacks = convert_floor(tmx, gid_map)
+        grid, stairs, npcs, triggers, layer_props, stacks, wiring = convert_floor(tmx, gid_map)
         idx = int(tmx.stem)
         doc = {
-            "floor": FLOOR_NO.get(idx),          # tmx 编号=楼层号(待语义报告终审)
+            "floor": FLOOR_NO.get(idx),          # tmx 编号=楼层号(考古终审确认)
             "tmx": tmx.name,
             "grid": grid,                          # 每格 null 或叠放栈(自下而上)
             "stairs": stairs,
+            "stair_links": wiring["stair_links"],  # 楼梯落点与层差(43层上梯+2/45层下梯-2)
             "npcs": npcs,                          # 由 npc 层属性机械接线
-            "triggers": triggers,                  # 由 event 层属性机械接线(踩格触发)
-            "layer_props": layer_props,            # door机关/stair落点/hide等原始属性
+            "triggers": triggers,                  # 踩格触发(由 event 层属性接线)
+            "guard_doors": wiring["guard_doors"],  # 杀光守卫→门开
+            "kill_triggers": wiring["kill_triggers"],  # 杀光指定怪→触发事件(含49层封印阵)
+            "first_attack": wiring["first_attack"],   # 先攻怪位置(40层,暂未启用)
+            "layer_props": layer_props,            # 其余原始属性(hide/passive/appearEvent 等)
         }
         _write(FLOORS_OUT / f"f{idx}.json", doc)
         total_stacks += stacks

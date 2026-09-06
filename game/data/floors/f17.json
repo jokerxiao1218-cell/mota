@@ -695,8 +695,96 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   5,
+   1
+  ],
+  "down_stand": [
+   5,
+   9
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     1,
+     3
+    ]
+   ],
+   "guards": [
+    [
+     0,
+     4
+    ],
+    [
+     2,
+     4
+    ]
+   ]
+  },
+  {
+   "doors": [
+    [
+     9,
+     3
+    ]
+   ],
+   "guards": [
+    [
+     8,
+     4
+    ],
+    [
+     10,
+     4
+    ]
+   ]
+  },
+  {
+   "doors": [
+    [
+     1,
+     6
+    ]
+   ],
+   "guards": [
+    [
+     0,
+     7
+    ],
+    [
+     2,
+     7
+    ]
+   ]
+  },
+  {
+   "doors": [
+    [
+     9,
+     6
+    ]
+   ],
+   "guards": [
+    [
+     8,
+     7
+    ],
+    [
+     10,
+     7
+    ]
+   ]
+  }
+ ],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "door": {
    "34": "44,46",

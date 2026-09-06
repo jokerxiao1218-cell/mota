@@ -34,9 +34,8 @@
     {
      "layer": "building",
      "layer_id": 10,
-     "kind": "big_part",
-     "sprite": "pb_m_0",
-     "part": "pb_m_0"
+     "kind": "altar",
+     "sprite": "pb_m_0"
     }
    ],
    [
@@ -702,6 +701,18 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   0,
+   9
+  ],
+  "down_stand": [
+   10,
+   9
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [
   {
    "npc": 5,
@@ -710,6 +721,9 @@
   }
  ],
  "triggers": [],
+ "guard_doors": [],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "stair": {
    "location": "99,109"

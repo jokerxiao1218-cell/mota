@@ -28,6 +28,9 @@
   "star": {
    "walkable": true
   },
+  "altar": {
+   "walkable": false
+  },
   "big_part": {
    "walkable": false
   },
@@ -64,13 +67,13 @@
    "id": 1005,
    "name": "怪物门",
    "sprite": "door1005",
-   "opens_by": "event"
+   "opens_by": "kill_guards"
   },
   "1006": {
    "id": 1006,
    "name": "墙门",
    "sprite": "door1006",
-   "opens_by": "event"
+   "opens_by": "bump"
   }
  }
 }

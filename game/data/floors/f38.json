@@ -719,6 +719,18 @@
    "y": 0
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   9,
+   0
+  ],
+  "down_stand": [
+   1,
+   0
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [
   {
    "npc": 29,
@@ -733,6 +745,28 @@
    "event": 15
   }
  ],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     1,
+     8
+    ]
+   ],
+   "guards": [
+    [
+     0,
+     9
+    ],
+    [
+     2,
+     9
+    ]
+   ]
+  }
+ ],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "door": {
    "89": "99,101",

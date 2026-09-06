@@ -711,6 +711,18 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   5,
+   9
+  ],
+  "down_stand": [
+   0,
+   9
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [
   {
@@ -724,6 +736,9 @@
    "event": 2
   }
  ],
+ "guard_doors": [],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "door": {
    "hide": "10"

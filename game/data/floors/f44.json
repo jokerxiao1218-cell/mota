@@ -364,8 +364,42 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   0,
+   1
+  ],
+  "down_stand": [
+   0,
+   9
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     5,
+     7
+    ]
+   ],
+   "guards": [
+    [
+     4,
+     8
+    ],
+    [
+     6,
+     8
+    ]
+   ]
+  }
+ ],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "door": {
    "82": "92,94"

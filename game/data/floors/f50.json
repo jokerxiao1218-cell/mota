@@ -946,6 +946,7 @@
   ]
  ],
  "stairs": [],
+ "stair_links": {},
  "npcs": [
   {
    "npc": 39,
@@ -954,6 +955,9 @@
   }
  ],
  "triggers": [],
+ "guard_doors": [],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "npc": {
    "49": "39"

@@ -443,6 +443,18 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   1,
+   10
+  ],
+  "down_stand": [
+   1,
+   10
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [
   {
@@ -451,6 +463,9 @@
    "event": 23
   }
  ],
+ "guard_doors": [],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "stair": {
    "location": "111,111"

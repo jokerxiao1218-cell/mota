@@ -686,8 +686,23 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   0,
+   9
+  ],
+  "down_stand": [
+   0,
+   1
+  ],
+  "up_diff": 2,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [],
+ "guard_doors": [],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "stair": {
    "location": "99,11,2,-1"

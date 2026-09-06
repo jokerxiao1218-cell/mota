@@ -88,6 +88,24 @@ def validate(data):
         for trig in fl.get("triggers", []):
             if trig.get("event") not in event_ids:
                 errors.append(f"楼层 {fno}:触发事件 {trig.get('event')} 不在事件表")
+        for kt in fl.get("kill_triggers", []):
+            if kt.get("event") not in event_ids:
+                errors.append(f"楼层 {fno}:杀怪触发事件 {kt.get('event')} 不在事件表")
+            for p in kt.get("kill", []) + kt.get("keep_alive", []):
+                if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                    errors.append(f"楼层 {fno}:杀怪触发坐标非法 {p}")
+        links = fl.get("stair_links") or {}
+        for key in ("up_stand", "down_stand"):
+            p = links.get(key)
+            if p is not None and not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                errors.append(f"楼层 {fno}:楼梯落点坐标非法 {p}")
+        for gd in fl.get("guard_doors", []):
+            for p in gd.get("doors", []) + gd.get("guards", []):
+                if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                    errors.append(f"楼层 {fno}:守卫门坐标非法 {p}")
+        for p in fl.get("first_attack", []):
+            if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                errors.append(f"楼层 {fno}:先攻怪坐标非法 {p}")
 
     for mid, mon in data["monsters"].items():
         if mon.get("event") is not None and mon["event"] not in event_ids:

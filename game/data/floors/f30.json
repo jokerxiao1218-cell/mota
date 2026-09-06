@@ -790,8 +790,58 @@
    "y": 10
   }
  ],
+ "stair_links": {
+  "up_stand": [
+   5,
+   1
+  ],
+  "down_stand": [
+   5,
+   9
+  ],
+  "up_diff": 1,
+  "down_diff": -1
+ },
  "npcs": [],
  "triggers": [],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     5,
+     3
+    ]
+   ],
+   "guards": [
+    [
+     2,
+     4
+    ],
+    [
+     3,
+     4
+    ],
+    [
+     4,
+     4
+    ],
+    [
+     6,
+     4
+    ],
+    [
+     7,
+     4
+    ],
+    [
+     8,
+     4
+    ]
+   ]
+  }
+ ],
+ "kill_triggers": [],
+ "first_attack": [],
  "layer_props": {
   "stair": {
    "location": "16,104"
