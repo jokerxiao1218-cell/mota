@@ -1293,6 +1293,10 @@ class Engine:
     def run(self):
         """开窗口跑 60FPS 主循环(QUIT/KEYDOWN 事件泵)。"""
         pygame.init()
+        # 按住方向键连续走(原版手感):按下 400ms 后开始,每 150ms 重复一步
+        # ——pygame 默认不重复,按住 W 只发一次 KEYDOWN,走一格就停。
+        # 对话/菜单模式不受影响:重复 KEYDOWN 照走 handle_key 的模式分派。
+        pygame.key.set_repeat(400, 150)
         if self.screen is None:
             self.screen = ui.create_screen()
         pygame.display.set_caption("魔塔 50 层")
