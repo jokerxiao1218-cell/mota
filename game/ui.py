@@ -12,6 +12,8 @@
 └────────────────────────┘
 """
 
+import os
+
 import pygame
 
 # ---------------- 布局常量 ----------------
@@ -92,8 +94,15 @@ def wrap_text(text, size, max_width):
 # ---------------- 窗口 ----------------
 
 def create_screen():
-    """创建游戏窗口(SDL dummy 环境下也能拿到 Surface,方便无头测试)。"""
-    return pygame.display.set_mode((WIDTH, HEIGHT))
+    """创建游戏窗口(SDL dummy 环境下也能拿到 Surface,方便无头测试)。
+
+    SCALED:真机上 SDL 把窗口按【整数倍】自动放大(1080p 屏约 2 倍
+    =1152×944,更高的屏倍数更大),像素贴图不糊;返回的 Surface 仍是
+    WIDTH×HEIGHT 的逻辑画布,所以全部绘制代码与像素断言测试的坐标
+    一律不变。无头 dummy 环境退回普通模式:反正没有真窗口可缩放,
+    而且 SCALED 在 dummy 下重复 set_mode 会报 failed to create renderer。"""
+    flags = 0 if os.environ.get("SDL_VIDEODRIVER") == "dummy" else pygame.SCALED
+    return pygame.display.set_mode((WIDTH, HEIGHT), flags)
 
 
 # ---------------- 主画面 ----------------
