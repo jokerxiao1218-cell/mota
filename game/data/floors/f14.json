@@ -173,7 +173,8 @@
      "layer_id": 3,
      "kind": "door",
      "id": 1006,
-     "sprite": "door1006_0"
+     "sprite": "door1006_0",
+     "passive": true
     }
    ],
    null,
@@ -800,6 +801,10 @@
  ],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "door": {
    "22": "0,2,12",

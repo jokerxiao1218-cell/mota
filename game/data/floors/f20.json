@@ -714,9 +714,32 @@
    "event": 6
   }
  ],
- "guard_doors": [],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     2
+    ]
+   ],
+   "guards": [
+    [
+     5,
+     5
+    ]
+   ]
+  }
+ ],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "stair": {
    "location": "16,104"

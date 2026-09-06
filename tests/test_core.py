@@ -186,12 +186,21 @@ def test_battle_dragon_slayer(data):
                        {"dragon_slayer": True})["hero_damage"] == 255
 
 
-def test_battle_wizards_unfightable(data):
-    """巫师 125/126 数据里标了 unfightable:攻防再高也打不了,只能绕着走。"""
-    hero = plain_hero(99999, 9999, 9999)
+def test_battle_unfightable_flag_respected(data):
+    """数据若给怪标 unfightable(通用机制位,当前全塔无怪使用):攻防再高也打不了。
+    勘误记录:当初误标给巫师 125/126,走查到 48 层发现上梯唯一通路被初级巫师
+    堵死、原版显然能过;回查上游 monster.json 无此字段(v6 已删误标)。"""
+    fake = dict(data["monsters"]["100"], special={"unfightable": True})
+    result = calc_battle(plain_hero(99999, 9999, 9999), fake, {})
+    assert result == {"can_fight": False, "hero_damage": 0, "turns": 0, "gold": 0}
+
+
+def test_battle_wizards_are_fightable(data):
+    """巫师 125/126 可正面战斗(上游数据无"不可战斗"标记;魔伤只是守关特性)。"""
+    hero = plain_hero(4000, 250, 150)      # 两回合杀:巫师能还手一次,损血可见
     for mid in ("125", "126"):
         result = calc_battle(hero, data["monsters"][mid], {})
-        assert result == {"can_fight": False, "hero_damage": 0, "turns": 0, "gold": 0}
+        assert result["can_fight"] is True and result["hero_damage"] > 0
 
 
 def test_battle_death_preview(data):

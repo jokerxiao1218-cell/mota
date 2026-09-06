@@ -235,6 +235,10 @@ class Engine:
                 grid[y][x] = copy.deepcopy(stack)
             doc = dict(src)                 # 其余字段共用引用,只有 grid 是自己的
             doc["grid"] = grid
+            # npcs/triggers 摆放表也深拷贝:事件 api(clear_npc_event 等)会改
+            # 运行时摆放条目,共享引用会把改动漏进数据源(污染 load_all 的原 dict)
+            doc["npcs"] = copy.deepcopy(src.get("npcs", []))
+            doc["triggers"] = copy.deepcopy(src.get("triggers", []))
             pl = self.state.get("placements", {}).get(key)
             if pl:
                 # batch 6:事件/道具动态改过的 NPC/触发器摆放表(全量快照)。
@@ -1189,12 +1193,19 @@ class Engine:
     def api_clear_npc_event(self, floor, x, y):
         """清掉该位置 NPC 的 event_talk(29 层小偷):之后撞他只普通聊天。
 
-        npcs.json 是共享源数据不能直接改,所以在【摆放条目】上记一个
-        event_talk=None 的覆盖标记,_npc_entry_at 取条目时套用。"""
+        双保险两条记录:①摆放条目上记 event_talk=None 的覆盖标记,
+        _npc_entry_at 取条目时套用;②flags.npcs_event_talk_cleared 台账
+        记 NPC id,NpcFlow 靠它解锁(它在事件层,只拿得到 id 与台账,看
+        不到引擎的摆放副本——只记①的话 29 层小偷永远说"还在挖")。
+        台账随 state 走,读档不丢。"""
         doc = self.floor_doc(floor)
         for placed in doc.get("npcs", []):
             if placed["x"] == x and placed["y"] == y:
                 placed["event_talk"] = None
+                ledger = self.state["flags"].setdefault(
+                    "npcs_event_talk_cleared", [])
+                if placed["npc"] not in ledger:
+                    ledger.append(placed["npc"])
                 self._save_placements(floor)
                 return
         raise ValueError(

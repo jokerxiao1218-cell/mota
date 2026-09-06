@@ -703,6 +703,10 @@
  "guard_doors": [],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "stair": {
    "location": "99,11,2,-1"

@@ -117,8 +117,10 @@ def convert_monsters():
         if magic == 0.5:
             special["halve_hp_trap"] = True          # 魔法警卫:两警卫相隔2格夹击,HP=ceil(HP/2)
         elif isinstance(magic, (int, float)):
-            special["adjacent_damage"] = int(magic)  # 巫师:相邻格固定魔伤(可叠加)
-            special["unfightable"] = True            # TODO(语义报告):确认是否绝对不可正面战斗
+            # 巫师:相邻格固定魔伤(可叠加)。勘误(v6 走查考据):上游 monster.json
+            # 没有任何"不可战斗"字段,magicAttack 只是魔伤——当初误标 unfightable
+            # 会让 48 层上梯(唯一通路被初级巫师堵着)永远锁死,已删。
+            special["adjacent_damage"] = int(magic)
         if mon.get("big"):
             special["big"] = mon["big"]              # 3×3 大怪格偏移(元素格=贴图格+1行,考古终审)
         if mon.get("extraDamage") is not None:
@@ -395,6 +397,18 @@ def convert_floor(tmx_path, gid_map):
     for k, v in layer_props.get("door", {}).items():
         if k.replace(",", "").isdigit():
             guard_doors.append({"doors": _flat_list(k), "guards": _flat_list(v)})
+    # ---- 杀守卫开门(事件内嵌版,v6):上游事件还能带 monsterDoor 字段——
+    #      {怪位csv: 门位列表},语义与层属性版相同(杀光一组怪→门自动弹开),
+    #      机关挂在事件触发所在层。全塔 3 处:
+    #      10 层埋伏(事件2):杀光 8 只埋伏骷髅→开顶行门 27;杀 Boss(5,0)→开笼门 36/40/71
+    #      20 层决斗(事件6):杀吸血鬼(5,5)→开决斗场门 93/27
+    #      33 层(事件13):杀光 4 守卫→开双门 42/86 ----
+    ev_src = _load("event.json")
+    for trig in triggers:
+        md = (ev_src.get(str(trig["event"])) or {}).get("monsterDoor")
+        for kill_csv, door_flats in (md or {}).items():
+            guard_doors.append({"doors": [_flat_pos(p) for p in door_flats],
+                                "guards": _flat_list(kill_csv)})
     # ---- 杀怪触发:monster 层属性 monsterEvent="事件:须杀光位置" /
     #      disappearMonsterEvent="事件:须杀光位置:须存活位置"(先杀存活列表任一→永久取消) ----
     kill_triggers = []

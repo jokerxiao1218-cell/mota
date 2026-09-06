@@ -313,8 +313,7 @@
   "boss": false,
   "event": null,
   "special": {
-   "adjacent_damage": 100,
-   "unfightable": true
+   "adjacent_damage": 100
   }
  },
  "126": {
@@ -327,8 +326,7 @@
   "boss": false,
   "event": null,
   "special": {
-   "adjacent_damage": 200,
-   "unfightable": true
+   "adjacent_damage": 200
   }
  },
  "127": {

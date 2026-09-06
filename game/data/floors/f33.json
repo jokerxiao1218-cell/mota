@@ -59,7 +59,8 @@
      "layer_id": 3,
      "kind": "door",
      "id": 1001,
-     "sprite": "door1001_0"
+     "sprite": "door1001_0",
+     "hide": true
     },
     {
      "layer": "stair",
@@ -632,7 +633,8 @@
      "layer_id": 3,
      "kind": "door",
      "id": 1006,
-     "sprite": "door1006_0"
+     "sprite": "door1006_0",
+     "appear": true
     }
    ],
    null,
@@ -738,9 +740,44 @@
    "event": 13
   }
  ],
- "guard_doors": [],
+ "guard_doors": [
+  {
+   "doors": [
+    [
+     9,
+     3
+    ],
+    [
+     9,
+     7
+    ]
+   ],
+   "guards": [
+    [
+     8,
+     4
+    ],
+    [
+     10,
+     4
+    ],
+    [
+     8,
+     6
+    ],
+    [
+     10,
+     6
+    ]
+   ]
+  }
+ ],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "door": {
    "appear": "106",

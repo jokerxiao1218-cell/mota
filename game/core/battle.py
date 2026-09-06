@@ -31,7 +31,10 @@ def calc_battle(hero, monster, flags):
     m_def, m_gold = monster["defence"], monster["gold"]
     m_id = monster.get("id")
 
-    # 巫师(125/126)在数据里标了 unfightable(不可战斗),只能绕着走吃魔伤
+    # 数据若给怪标 unfightable(不可战斗,通用机制位)→ 攻防再高也打不了。
+    # 勘误记录:当初误标给巫师 125/126,走查到 48 层发现上梯唯一通路被初级
+    # 巫师堵死、原版显然能过——回查上游 monster.json 无此字段(magicAttack
+    # 只是相邻魔伤),v6 已纠正;当前全塔无怪带此标记,分支留作扩展位。
     if monster.get("special", {}).get("unfightable"):
         return {"can_fight": False, "hero_damage": 0, "turns": 0, "gold": 0}
     # 血 ≤ 0 的怪已经死了,不存在这场战斗

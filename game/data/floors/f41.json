@@ -129,14 +129,16 @@
      "layer_id": 5,
      "kind": "monster",
      "sprite": "126_0",
-     "id": 126
+     "id": 126,
+     "hide": true
     },
     {
      "layer": "door",
      "layer_id": 3,
      "kind": "door",
      "id": 1006,
-     "sprite": "door1006_0"
+     "sprite": "door1006_0",
+     "passive": true
     }
    ],
    [
@@ -846,6 +848,26 @@
  "guard_doors": [],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [
+  {
+   "door": [
+    9,
+    1
+   ],
+   "kill": [
+    1,
+    1
+   ]
+  }
+ ],
+ "wall_shows": [
+  [
+   9,
+   1
+  ]
+ ],
  "layer_props": {
   "stair": {
    "location": "104,16"

@@ -210,12 +210,28 @@ def test_mechanism_wiring(data):
                for st in f10["grid"][10] if st for c in st)
     # f1 无下行梯:location 的 '0' 占位归一成 None
     assert floors["1"]["stair_links"]["down_stand"] is None
-    # 守卫门的门 id 混用(1004/1006 居多),引擎不能按 1005 过滤——数据侧钉死事实
+    # 守卫门的门 id 混用(1004/1006 居多),引擎不能按 1005 过滤——数据侧钉死事实。
+    # v6 物化"事件内嵌 monsterDoor"后集合多了 1003:f20 决斗场(事件6)往静态
+    # 红门 (5,8) 上叠一扇 1004,机关弹的是叠上的那扇,红门本身留着用钥匙开
+    # ——所以事件没触发前,机关指向格的静态栈顶是 1003(预期,不是数据错误)。
     ids = {c.get("id") for fno, fl in floors.items()
            for gd in fl.get("guard_doors") or []
            for p in gd["doors"] for st in [fl["grid"][p[1]][p[0]]] if st
            for c in [st[-1]] if c.get("kind") == "door"}
-    assert ids == {1004, 1005, 1006}, ids
+    assert ids == {1003, 1004, 1005, 1006}, ids
+    # v6 事件内嵌 monsterDoor(杀光一组怪→门自动弹开,挂事件触发所在层):
+    # f10 埋伏(事件2):8 只埋伏骷髅→开顶行门;Boss(5,0)→开笼门 36/40/71
+    gds10 = {(tuple(map(tuple, gd["guards"])), tuple(map(tuple, gd["doors"])))
+             for gd in floors["10"]["guard_doors"]}
+    assert (((5, 0),), ((3, 3), (7, 3), (5, 6))) in gds10
+    assert ((4, 3), (5, 3), (6, 3), (4, 4), (6, 4), (4, 5), (5, 5), (6, 5)) \
+        in {g for g, _ in gds10}
+    assert [d for g, d in gds10 if len(g) == 8] == [((5, 2),)]    # 8 骷髅只开一门
+    # f20 决斗(事件6):杀吸血鬼(5,5)→开 (5,8) 叠门与 (5,2)
+    assert {"guards": [[5, 5]], "doors": [[5, 8], [5, 2]]} in floors["20"]["guard_doors"]
+    # f33(事件13):杀光 4 守卫→开双门
+    assert {"guards": [[8, 4], [10, 4], [8, 6], [10, 6]],
+            "doors": [[9, 3], [9, 7]]} in floors["33"]["guard_doors"]
 
 
 def test_floor_wiring(data):

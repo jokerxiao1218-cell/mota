@@ -146,7 +146,8 @@
      "layer_id": 14,
      "kind": "door",
      "id": 1006,
-     "sprite": "door1006_0"
+     "sprite": "door1006_0",
+     "passive": true
     }
    ],
    [
@@ -808,6 +809,10 @@
  "guard_doors": [],
  "kill_triggers": [],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "stair": {
    "location": "104,99"

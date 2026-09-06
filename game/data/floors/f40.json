@@ -14,7 +14,8 @@
      "layer_id": 9,
      "kind": "stair",
      "dir": "up",
-     "sprite": "stair_up"
+     "sprite": "stair_up",
+     "hide": true
     },
     {
      "layer": "monster",
@@ -34,7 +35,8 @@
      "layer_id": 4,
      "kind": "prop",
      "id": 6,
-     "sprite": "prop6"
+     "sprite": "prop6",
+     "hide": true
     }
    ]
   ],
@@ -643,6 +645,10 @@
    1
   ]
  ],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "stair": {
    "hide": "5",

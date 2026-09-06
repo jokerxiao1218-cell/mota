@@ -843,6 +843,10 @@
   }
  ],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "stair": {
    "location": "104,1"

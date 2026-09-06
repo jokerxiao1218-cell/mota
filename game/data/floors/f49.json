@@ -60,14 +60,16 @@
      "layer_id": 4,
      "kind": "prop",
      "id": 6,
-     "sprite": "prop6"
+     "sprite": "prop6",
+     "hide": true
     },
     {
      "layer": "monster",
      "layer_id": 5,
      "kind": "monster",
      "sprite": "100_0",
-     "id": 100
+     "id": 100,
+     "hide": true
     }
    ]
   ],
@@ -498,10 +500,7 @@
   }
  ],
  "stair_links": {
-  "up_stand": [
-   0,
-   0
-  ],
+  "up_stand": null,
   "down_stand": [
    1,
    10
@@ -606,6 +605,10 @@
   }
  ],
  "first_attack": [],
+ "appear_event": null,
+ "disappear_event": null,
+ "door_unlocks": [],
+ "wall_shows": [],
  "layer_props": {
   "door": {
    "71": "81,83",
