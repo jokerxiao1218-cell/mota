@@ -9,6 +9,12 @@ main() 函数体里【延迟执行】——保证现在它们还不存在时:
 """
 
 import sys
+from pathlib import Path
+
+# 允许两种跑法:python -m game.main,以及 run.sh 的 python game/main.py。
+# 后者 sys.path 里只有 game/ 这一层目录,不补仓库根目录就 import 不到 game 包。
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def _say(msg):
@@ -34,8 +40,9 @@ def build_rules_adapter(core):
         def calc_battle(self, hero, monster, flags):
             return core.calc_battle(hero, monster, flags)
 
-        def apply_pickup(self, state, item_id, item):
-            return core.apply_pickup(state, item_id, item)
+        def apply_pickup(self, state, item_id, data):
+            # data 是 loader.load_all() 的大字典(引擎按 §4.4-B 传整包,core 内部查表)
+            return core.apply_pickup(state, item_id, data)
 
         def adjacent_damage(self, state, floor_doc, x, y):
             return core.adjacent_damage(state, floor_doc, x, y)

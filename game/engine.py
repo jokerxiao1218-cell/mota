@@ -52,9 +52,11 @@ class RulesAdapter:
     - new_state() -> dict               开局状态(400/10/10 金0;出生坐标由接线填)
     - calc_battle(hero, monster, flags) -> {"can_fight":bool, "hero_damage":int,
       "turns":int, "gold":int}          纯函数预判战斗;gold 已含幸运金币倍数
-    - apply_pickup(state, item_id, item) -> dict
+    - apply_pickup(state, item_id, data) -> dict
                                         拾取结算(血瓶宝石×区域、武器盾取最高级、钥匙计数);
-                                        item_id 为道具数字 id,item 为 items.json 里该道具条目
+                                        item_id 为道具数字 id;data 是 loader.load_all() 的
+                                        整个数据大字典(规则层内部要查 data["items"]),
+                                        不是单个道具条目——传条目会 KeyError,别传错
     - adjacent_damage(state, floor_doc, x, y) -> int
                                         巫师相邻魔伤合计(持神圣盾=0);floor_doc 是
                                         运行时楼层文档(引擎已把 grid 换成当前实际格子,
@@ -327,7 +329,7 @@ class Engine:
         monster = self._monster(cell.get("id"))
         if not monster:
             return
-        result = self.rules.calc_battle(hero, monster, self._battle_flags())
+        result = self.rules.calc_battle(hero, monster, self._battle_flags(nx, ny))
         if not result.get("can_fight"):
             self.message = f"打不过 {monster.get('name', '怪物')},先绕开它吧"
             return
@@ -338,6 +340,8 @@ class Engine:
         self.state["flags"].setdefault("monsters_dead", []).append(f"{fno}:{nx},{ny}")
         self.message = (f"打败了 {monster.get('name')},损血 {result.get('hero_damage', 0)},"
                         f"得 {result.get('gold', 0)} 金币")
+        if self._check_guard_doors():            # 杀光一组守卫 → 1005 怪物门自动开
+            self.message += ";守卫清空,怪物门开了!"
         if monster.get("event") is not None:    # 杀怪触发的剧情(骷髅队长/魔王等)
             self._start_event(monster["event"])
 
@@ -346,16 +350,26 @@ class Engine:
             self._arrive(nx, ny)
         self._check_dead()
 
+    def _npc_entry_at(self, x, y):
+        """(x,y) 处摆放的 NPC:拿 npcs.json 条目;若摆放条目被事件清过
+        event_talk(clear_npc_event),返回套用覆盖的副本,源数据不动。"""
+        for placed in self.floor_doc().get("npcs", []):
+            if placed["x"] == x and placed["y"] == y:
+                entry = self.data["npcs"].get(str(placed["npc"]))
+                if entry is None:
+                    return None
+                if "event_talk" in placed and placed["event_talk"] is None:
+                    return dict(entry, event_talk=None)
+                return entry
+        return None
+
     def _bump_npc(self, nx, ny):
         """撞 NPC:查本层摆放表,把 npcs.json 条目交给事件适配器去聊。"""
-        doc = self.floor_doc()
-        for placed in doc.get("npcs", []):
-            if placed["x"] == nx and placed["y"] == ny:
-                entry = self.data["npcs"].get(str(placed["npc"]))
-                if entry:
-                    self.events.talk(entry, self.state)
-                    self._event_started()
-                return
+        entry = self._npc_entry_at(nx, ny)
+        if entry:
+            self.events.talk(entry, self.state)
+            self._event_started()
+            return
         # 摆放表里没有(纯装饰/剧情脚本用的 NPC 格):不响应
 
     def _bump_altar(self):
@@ -373,7 +387,8 @@ class Engine:
         while stack and stack[-1].get("kind") == "prop" and not stack[-1].get("hide"):
             prop = stack[-1]
             item = self.data["items"].get(str(prop.get("id")), {})
-            self.state = self.rules.apply_pickup(self.state, prop.get("id"), item)
+            # 第三参传整个数据大字典(core 内部查 data["items"]),不是道具条目
+            self.state = self.rules.apply_pickup(self.state, prop.get("id"), self.data)
             self._pop_cell(self.state["floor"], x, y, stack)
             self.message = f"获得 {item.get('name', '未知道具')}"
 
@@ -388,12 +403,10 @@ class Engine:
                 self._start_event(trig["event"])
 
         # d) NPC 摆放点没画 NPC 格的(数据里有这种接线),走到格子上也算撞见
-        for placed in doc.get("npcs", []):
-            if placed["x"] == x and placed["y"] == y:
-                entry = self.data["npcs"].get(str(placed["npc"]))
-                if entry:
-                    self.events.talk(entry, self.state)
-                    self._event_started()
+        entry = self._npc_entry_at(x, y)
+        if entry:
+            self.events.talk(entry, self.state)
+            self._event_started()
 
         # e) 每步后的特殊机制:巫师相邻魔伤 / 警卫夹击
         self._post_step(x, y)
@@ -419,6 +432,9 @@ class Engine:
             self.message = "这条路走不通"
             return
         new_floor, x, y = result
+        if str(new_floor) not in self.data["floors"]:   # resolver 给了不存在的层
+            self.message = f"落点第 {new_floor} 层不在数据里(数据或落点接线问题)"
+            return
         self.state["floor"] = new_floor
         self.state["hero"]["pos"] = [x, y]
         visited = self.state.setdefault("visited", [])
@@ -427,14 +443,71 @@ class Engine:
         self.floor_doc(new_floor)               # 新层物化进缓存
         self.message = f"来到第 {new_floor} 层"
 
-    def _battle_flags(self):
-        """战斗开关(§4.4-B):由持有道具推导。"""
+    def _battle_flags(self, x=None, y=None):
+        """战斗开关(§4.4-B):道具三个由持有推导;first_attack 由楼层位置表决定。
+
+        x/y 是被撞怪物的格子坐标(怪物手册预测也传):当前层的 first_attack
+        位置表里有这一格、且这格的怪还没死过 → 该怪先攻(损血 = n×d2)。
+        """
         props = self.state["hero"].get("props", {})
         return {
             "cross": "28" in props,             # 十字架
             "lucky_coin": "27" in props,        # 幸运金币
             "dragon_slayer": "29" in props,     # 屠龙匕
+            "first_attack": self._is_first_attack(x, y),
         }
+
+    def _is_first_attack(self, x, y):
+        """(x,y) 这格的怪是不是先攻怪(2026-09-06 用户拍板启用,40 层 12 个位置)。
+
+        失效方式选了【经 monsters_dead 判断】而不是运行时从表里删,理由:
+        1. floor_doc() 的其余字段(含 first_attack)与 loader 源数据共享引用,
+           运行时删元素会污染源数据——同进程里读档重建缓存、别的 Engine 实例
+           都会看到被删过的表,还会漏记进 floors_state 导致存档丢状态;
+        2. monsters_dead 本来就是杀怪台账(state 的一部分,随存档走),
+           "位置失效 = 这格的怪死过了"一个 in 查询就还原,零写入零副作用。
+        """
+        if x is None or y is None:
+            return False
+        doc = self.floor_doc()
+        if [x, y] not in (doc.get("first_attack") or []):
+            return False
+        # 怪死过这格就失效(位置表是给"这只怪"的授权,不传给后来者)
+        dead = self.state["flags"].get("monsters_dead", [])
+        return f"{self.state['floor']}:{x},{y}" not in dead
+
+    def _check_guard_doors(self):
+        """杀完怪查本层 guard_doors(勘误终审:1005 怪物门 = 杀光守卫自动开)。
+
+        一组守卫的格子里一只怪都不剩(栈里翻遍无 monster)→ 这组 doors
+        里还关着的 1005 门弹栈,露出压在下面的东西(原版机制)。
+        只在引擎杀怪后调用;事件层杀怪走 api 的集成由 batch 6 接线。
+        """
+        doc = self.floor_doc()
+        fno = self.state["floor"]
+        opened = False
+        for group in doc.get("guard_doors") or []:
+            guards = group.get("guards") or []
+            doors = group.get("doors") or []
+            if not guards or not doors:
+                continue            # 数据不完整就跳过这组(坐标合法性加载器已校验)
+            still_alive = False
+            for gx, gy in guards:
+                for cell in doc["grid"][gy][gx] or []:
+                    if cell.get("kind") == "monster":
+                        still_alive = True
+                        break
+                if still_alive:
+                    break
+            if still_alive:
+                continue
+            for dx, dy in doors:
+                stack = doc["grid"][dy][dx]
+                if (stack and stack[-1].get("kind") == "door"
+                        and stack[-1].get("id") == 1005):
+                    self._pop_cell(fno, dx, dy, stack)
+                    opened = True
+        return opened
 
     def _check_dead(self):
         if self.state["hero"]["hp"] <= 0:
@@ -495,7 +568,12 @@ class Engine:
         self.mode = "menu"
 
     def _menu_root_pick(self, idx):
-        if idx == 0:                             # 存档 → 选槽位
+        if idx == 0:                             # 存档 → 先过"需怪物手册"门槛(原版设定)
+            if "18" not in self.state["hero"].get("props", {}):
+                # 契约 §4.4-B:core 不判这个门槛,由引擎菜单层拒绝
+                self.message = "还没有怪物手册(3 层老人送的),存不了档"
+                self.close_menu()
+                return
             self.menu_stack.append({
                 "title": "存档到哪个槽位?",
                 "options": ["槽位 1", "槽位 2", "槽位 3"],
@@ -560,33 +638,38 @@ class Engine:
     # ------------------------------------------------------------ 怪物手册
 
     def open_manual(self):
-        """H 键:必须持有怪物手册(道具 18)才能看。"""
+        """H 键:必须持有怪物手册(道具 18)才能看。
+
+        同一种怪可能既有先攻位置又有普通位置(40 层就是):按 (怪id, 先攻否)
+        去重各列一行,先攻那行带标记,预测损血按各自位置的开关算。
+        """
         if "18" not in self.state["hero"].get("props", {}):
             self.message = "你没有怪物手册(3 层老人送的),看不了"
             return
         rows, seen = [], set()
-        for row in self.floor_doc()["grid"]:
-            for stack in row:
+        for gy, row in enumerate(self.floor_doc()["grid"]):
+            for gx, stack in enumerate(row):
                 if not stack:
                     continue
                 for cell in stack:
                     if cell.get("kind") != "monster" or cell.get("hide"):
                         continue
                     mid = cell.get("id")
-                    if mid in seen:
+                    first = self._is_first_attack(gx, gy)
+                    if (mid, first) in seen:
                         continue
-                    seen.add(mid)
+                    seen.add((mid, first))
                     monster = self._monster(mid)
                     if not monster:
                         continue
                     result = self.rules.calc_battle(
-                        self.state["hero"], monster, self._battle_flags())
+                        self.state["hero"], monster, self._battle_flags(gx, gy))
                     if result.get("can_fight"):
                         verdict = f"损血{result.get('hero_damage', 0)}/{result.get('turns', 0)}回合"
                     else:
                         verdict = "打不过"
                     rows.append({
-                        "name": monster.get("name", "?"),
+                        "name": monster.get("name", "?") + ("(先攻)" if first else ""),
                         "hp": monster.get("hp", 0),
                         "attack": monster.get("attack", 0),
                         "defence": monster.get("defence", 0),
@@ -668,19 +751,35 @@ class Engine:
             self.mode = "play"
 
     # ------------------------------------------------------------ 事件层的 api
-    # 设计文档 §4.4-C:事件解释器需要引擎回调(get_floor/set_cell/...)。
-    # 集成时 main.py 把 build_api() 的返回值递给 EventRunner。
+    # 契约以 game/events.py 文件头 docstring 为准(14 键,§4.4-C 的完整版)。
+    # 事件层对地图的一切增删挪都走这里:引擎负责物化进运行时楼层文档、
+    # 记 floors_state 台账;凡"把怪变没"的都顺手记 monsters_dead(要点①:
+    # 事件/道具引发的怪物格增删都流经 set_cell,记账挂这里,先攻失效/
+    # 守卫门判定才和玩家亲手杀的怪一个口径)。
+    # 注意:npcs/triggers 摆放表的变化暂不进 floors_state(存档会丢),
+    # 台账怎么扩由集成阶段(batch 6)定,这里先留 TODO。
 
     def api_get_floor(self, floor):
         """某层当前实际格子(11×11 栈数组,含已被打开的门/被杀的怪的变化)。"""
         return self.floor_doc(floor)["grid"]
 
     def api_set_cell(self, floor, x, y, stack):
-        """事件直接改某格的栈(stack=None 表示清空)。"""
+        """整格替换(stack=None 表示清空该格)。旧栈有怪、新栈没怪 → 记怪死。"""
         if not (0 <= x < GRID and 0 <= y < GRID):
             raise ValueError(f"set_cell 坐标越界:{(x, y)}")
         grid = self.floor_doc(floor)["grid"]
-        grid[y][x] = copy.deepcopy(stack) if stack else None
+        old = grid[y][x] or []
+        new = copy.deepcopy(list(stack)) if stack else None
+        grid[y][x] = new
+        had_monster = any(c.get("kind") == "monster" for c in old)
+        has_monster = bool(new) and any(c.get("kind") == "monster" for c in new)
+        if had_monster and not has_monster:
+            dead = self.state["flags"].setdefault("monsters_dead", [])
+            key = f"{floor}:{x},{y}"
+            if key not in dead:
+                dead.append(key)
+                # 事件/道具炸掉的守卫同样算数:顺手查守卫门该不该开
+                self._check_guard_doors()
         self._record_change(floor, x, y)
 
     def api_spawn_monster(self, floor, x, y, monster_id):
@@ -694,12 +793,112 @@ class Engine:
                       "id": monster_id, "sprite": f"{monster_id}_0"})
         self._record_change(floor, x, y)
 
+    def api_add_npc(self, floor, x, y, npc_id):
+        """事件摆一个 NPC 上场(摆放表 + 格子都登记,撞他才能对上话)。"""
+        doc = self.floor_doc(floor)
+        doc.setdefault("npcs", []).append({"npc": npc_id, "x": x, "y": y})
+        stack = doc["grid"][y][x]
+        if stack is None:
+            stack = []
+            doc["grid"][y][x] = stack
+        stack.append({"layer": "npc", "kind": "npc", "sprite_id": npc_id})
+        self._record_change(floor, x, y)
+
+    def api_remove_npc(self, floor, x, y):
+        """把某位置的 NPC 撤下场(摆放表删条目 + 弹掉格子上的 NPC 层)。"""
+        doc = self.floor_doc(floor)
+        doc["npcs"] = [p for p in doc.get("npcs", [])
+                       if not (p["x"] == x and p["y"] == y)]
+        stack = doc["grid"][y][x] or []
+        for i in range(len(stack) - 1, -1, -1):
+            if stack[i].get("kind") == "npc":
+                stack.pop(i)
+                break
+        if not stack:
+            doc["grid"][y][x] = None
+        self._record_change(floor, x, y)
+
+    def api_add_trigger(self, floor, x, y, event_id):
+        """放一个"踩上去触发事件"的隐形格(事件摆放的机关)。"""
+        doc = self.floor_doc(floor)
+        doc.setdefault("triggers", []).append(
+            {"x": x, "y": y, "event": event_id})
+
+    def api_remove_trigger(self, floor, x, y):
+        """删掉某坐标的踩格触发器(一次性事件演完撤场)。"""
+        doc = self.floor_doc(floor)
+        doc["triggers"] = [t for t in doc.get("triggers", [])
+                           if not (t["x"] == x and t["y"] == y)]
+
+    def api_move(self, floor, kind, from_pos, to_pos):
+        """把一个东西挪一格(小偷走位等)。起止都是展平坐标 0~120。
+
+        kind 是格子类型("monster"/"npc"/...):从起格栈里挑最上面那个
+        该类型的 cell,压到止格栈顶。起格没这东西属于数据对不上,抛错
+        说明白,不悄悄吞掉。
+        """
+        fx, fy = int(from_pos) % GRID, int(from_pos) // GRID
+        tx, ty = int(to_pos) % GRID, int(to_pos) // GRID
+        grid = self.floor_doc(floor)["grid"]
+        if not (0 <= fx < GRID and 0 <= fy < GRID
+                and 0 <= tx < GRID and 0 <= ty < GRID):
+            raise ValueError(f"move 坐标越界:{from_pos}→{to_pos}")
+        stack = grid[fy][fx] or []
+        for i in range(len(stack) - 1, -1, -1):
+            if stack[i].get("kind") == kind:
+                cell = stack.pop(i)
+                break
+        else:
+            raise ValueError(
+                f"move:第 {floor} 层 ({fx},{fy}) 格里没有 {kind} 可挪")
+        if grid[ty][tx] is None:
+            grid[ty][tx] = []
+        grid[ty][tx].append(cell)
+        if not stack:
+            grid[fy][fx] = None
+        self._record_change(floor, fx, fy)
+        self._record_change(floor, tx, ty)
+
     def api_weaken(self, monster_id, ratio):
         """削弱某种怪(49 层封印:假魔王 ×0.1)。"""
         self._weakened[str(monster_id)] = float(ratio)
 
-    def api_change_floor(self, floor, x, y):
-        """事件传送/change_floor:把勇士扔到某层某格。"""
+    def api_register_monster_door(self, door_pos, guards):
+        """登记一扇"守卫门"(事件 meta.monsterDoor):door_pos 是展平坐标,
+        guards 是守卫的展平坐标列表。门位置还没门就先摆一扇 1005,
+        然后挂进本层 guard_doors——守卫全灭自动开(和地图原生 1005 同一套)。"""
+        dx, dy = int(door_pos) % GRID, int(door_pos) // GRID
+        fno = self.state["floor"]
+        doc = self.floor_doc(fno)
+        stack = doc["grid"][dy][dx]
+        if stack is None:
+            stack = []
+            doc["grid"][dy][dx] = stack
+        if not (stack and stack[-1].get("kind") == "door"
+                and stack[-1].get("id") == 1005):
+            stack.append({"layer": "door", "kind": "door", "id": 1005})
+        guard_xy = [[int(g) % GRID, int(g) // GRID] for g in (guards or [])]
+        doc.setdefault("guard_doors", []).append(
+            {"doors": [[dx, dy]], "guards": guard_xy})
+        self._record_change(fno, dx, dy)
+
+    def api_collide(self, floor, x, y):
+        """事件里"模拟勇者撞这格"(do 动作):怪=强制开战、NPC=对话、
+        门=照常开门——就是玩家自己撞上去会发生什么,原样演一遍。"""
+        if int(floor) != int(self.state["floor"]):
+            raise ValueError(
+                f"collide 只能撞当前层(当前第 {self.state['floor']} 层,"
+                f"事件却要撞第 {floor} 层)——事件数据的坐标多半不对")
+        stack = self.floor_doc(floor)["grid"][y][x] or []
+        self._interact(x, y, stack)
+
+    def api_jump_floor(self, floor, x=None, y=None):
+        """换层传送(事件 jump / 飞行魔杖)。x,y 传 None = 落到目标层楼梯口。"""
+        floor = int(floor)
+        if str(floor) not in self.data["floors"]:
+            raise ValueError(f"jump_floor:第 {floor} 层不在数据里(传送目标没这层)")
+        if x is None or y is None:
+            x, y = self._stair_landing(floor)
         self.state["floor"] = floor
         self.state["hero"]["pos"] = [x, y]
         visited = self.state.setdefault("visited", [])
@@ -707,14 +906,54 @@ class Engine:
             visited.append(floor)
         self.floor_doc(floor)
 
+    def _stair_landing(self, floor):
+        """某层的"楼梯口"落点:优先 stair_links.up_stand,退回第一张上楼梯。"""
+        doc = self.data["floors"][str(floor)]
+        stand = (doc.get("stair_links") or {}).get("up_stand")
+        if stand:
+            return stand[0], stand[1]
+        for s in doc.get("stairs", []):
+            if s["dir"] == "up":
+                return s["x"], s["y"]
+        raise LandingError(f"第 {floor} 层没有楼梯数据,算不出楼梯口落点")
+
+    def api_show(self, floor, x, y):
+        """显现该位置藏着的格子(10 层隐藏楼梯等):把 hide 标记摘掉。"""
+        stack = self.floor_doc(floor)["grid"][y][x] or []
+        for cell in stack:
+            cell.pop("hide", None)
+        self._record_change(floor, x, y)
+
+    def api_clear_npc_event(self, floor, x, y):
+        """清掉该位置 NPC 的 event_talk(29 层小偷):之后撞他只普通聊天。
+
+        npcs.json 是共享源数据不能直接改,所以在【摆放条目】上记一个
+        event_talk=None 的覆盖标记,_npc_entry_at 取条目时套用。"""
+        doc = self.floor_doc(floor)
+        for placed in doc.get("npcs", []):
+            if placed["x"] == x and placed["y"] == y:
+                placed["event_talk"] = None
+                return
+        raise ValueError(
+            f"clear_npc_event:第 {floor} 层 ({x},{y}) 没有摆放 NPC,数据对不上")
+
     def build_api(self):
-        """给事件层的回调字典(§4.4-C 的 api)。"""
+        """给事件层的回调字典(§4.4-C 的 api,键名以 game/events.py 文件头为准)。"""
         return {
             "get_floor": self.api_get_floor,
             "set_cell": self.api_set_cell,
             "spawn_monster": self.api_spawn_monster,
+            "add_npc": self.api_add_npc,
+            "remove_npc": self.api_remove_npc,
+            "add_trigger": self.api_add_trigger,
+            "remove_trigger": self.api_remove_trigger,
+            "move": self.api_move,
             "weaken": self.api_weaken,
-            "change_floor": self.api_change_floor,
+            "register_monster_door": self.api_register_monster_door,
+            "collide": self.api_collide,
+            "jump_floor": self.api_jump_floor,
+            "show": self.api_show,
+            "clear_npc_event": self.api_clear_npc_event,
         }
 
     # ------------------------------------------------------------ 渲染
