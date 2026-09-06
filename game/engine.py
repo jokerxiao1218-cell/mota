@@ -49,7 +49,9 @@ KEY_DOORS = {1001: ("yellow", "黄"), 1002: ("blue", "蓝"), 1003: ("red", "红"
 class RulesAdapter:
     """规则层适配器:签名 = 设计文档 §4.4-B(引擎只用到其中这些)。
 
-    - new_state() -> dict               开局状态(400/10/10 金0;出生坐标由接线填)
+    - new_state() -> dict               开局状态(序章:1000/100/100+神圣剑盾,
+                                        出生 1 层 (5,10);3 层被夺后 400/10/10
+                                        由事件改写)
     - calc_battle(hero, monster, flags) -> {"can_fight":bool, "hero_damage":int,
       "turns":int, "gold":int}          纯函数预判战斗;gold 已含幸运金币倍数
     - apply_pickup(state, item_id, data) -> dict
@@ -90,25 +92,41 @@ class RulesAdapter:
 
 
 class EventsAdapter:
-    """事件层适配器:签名按设计文档 §4.4-C 的 intent 协议。
+    """事件层适配器:签名按设计文档 §4.4-C 的 intent 协议(batch 6 扩展版)。
 
-    - talk(npc, state)        撞 NPC:npc 为 npcs.json 条目(纯 dict);
-                              适配器内部决定纯聊天还是跑 npc["event"]
+    - talk(npc, state, npc_pos=None)   撞 NPC:npc 为 npcs.json 条目(纯 dict);
+                              npc_pos=(x,y) 这个 NPC 站哪(小偷走位/离场要用)
     - altar_flow(state)       撞祭坛(4/12/32/46 层商店)
     - start(event, state)     启动事件:event 为 events.json 条目(纯 dict)
+    - usable_tools(state) -> [(道具id, 菜单文案)]   背包里能主动使用的道具
+    - use_tool(道具id, direction=None) -> {"ok":bool, "msg":str} 或 {"ok":True,
+                              "flow":True}(飞行魔杖这类要选目标的,适配器开了
+                              flow,引擎随后 _poll_intent 接管对话)
+    - enter_floor(楼层号) -> bool   换层钩子:该层有没有挂起事件(pending)要演,
+                              True = 开演了,引擎要进对话模式
     - step() -> intent        取当前意图:{"op":"chat","lines":[...]} /
-                              {"op":"choices","options":[{"label":...},...]} /
-                              {"op":"done"};没在跑事件时返回 None 或 done
+                              {"op":"choices","options":[...]} / {"op":"done"};
+                              没在跑事件时返回 None 或 done
+                              (sound/effect/pending 由适配器自己消化,引擎不见)
     - feed(response)          chat 喂 None(按键推进);choices 喂 0 起的选择序号
     """
 
-    def talk(self, npc, state):
+    def talk(self, npc, state, npc_pos=None):
         raise NotImplementedError
 
     def altar_flow(self, state):
         raise NotImplementedError
 
     def start(self, event, state):
+        raise NotImplementedError
+
+    def usable_tools(self, state):
+        raise NotImplementedError
+
+    def use_tool(self, item_id, direction=None):
+        raise NotImplementedError
+
+    def enter_floor(self, floor):
         raise NotImplementedError
 
     def step(self):
@@ -189,7 +207,7 @@ class Engine:
         self._runtime = {}            # 层号(str) -> 运行时楼层文档(grid 是可变副本)
         self._weakened = {}           # 怪物id(str) -> 倍率(49 层封印用)
 
-        self.mode = "play"            # play / dialog / menu / manual / gameover
+        self.mode = "play"            # play / dialog / menu / manual / gameover / ending
         self.event_active = False     # events 适配器有没有事件在跑
         self.intent = None            # 当前要渲染的 intent(chat/choices)
         self.choice_sel = 0
@@ -198,6 +216,8 @@ class Engine:
         self.manual_rows = []
         self.manual_sel = 0
         self.running = False
+        self._last_dir = None         # 最近一次成功移动的方向(镐往面前挖)
+        self._event_queue = []        # 事件里又触发事件 → 排队,演完一个再演下一个
 
         self.floor_doc()              # 开局就把当前层物化进运行时缓存
 
@@ -215,8 +235,28 @@ class Engine:
                 grid[y][x] = copy.deepcopy(stack)
             doc = dict(src)                 # 其余字段共用引用,只有 grid 是自己的
             doc["grid"] = grid
+            pl = self.state.get("placements", {}).get(key)
+            if pl:
+                # batch 6:事件/道具动态改过的 NPC/触发器摆放表(全量快照)。
+                # 格子栈的变化走 floors_state、摆放表走 placements,互不掺和
+                # (floors_state 只能放 [x, y, stack],塞别的会破坏解包约定)。
+                doc["npcs"] = copy.deepcopy(pl.get("npcs", []))
+                doc["triggers"] = copy.deepcopy(pl.get("triggers", []))
             self._runtime[key] = doc
         return self._runtime[key]
+
+    def _save_placements(self, fno):
+        """把该层当前的 NPC/触发器摆放表全量快照进 state['placements']。
+
+        add/remove_npc、add/remove_trigger、clear_npc_event 只改运行时楼层
+        文档;不落进 state 的话读档就丢。存"该层当前全量"最简单:重建
+        floor_doc 时整表覆盖,不用回放一串增删。
+        """
+        doc = self.floor_doc(fno)
+        self.state.setdefault("placements", {})[str(fno)] = {
+            "npcs": copy.deepcopy(doc.get("npcs", [])),
+            "triggers": copy.deepcopy(doc.get("triggers", [])),
+        }
 
     def _record_change(self, fno, x, y):
         """格子栈变了就记进 state['floors_state'](存档=整包快照的靠山)。"""
@@ -276,6 +316,7 @@ class Engine:
             self._interact(nx, ny, stack)
             return
         hero["pos"] = [nx, ny]
+        self._last_dir = (dx, dy)                # 记住朝向(镐往面前挖)
         self._arrive(nx, ny)
 
     def _interact(self, nx, ny, stack):
@@ -337,13 +378,19 @@ class Engine:
         hero["hp"] -= result.get("hero_damage", 0)
         hero["gold"] += result.get("gold", 0)
         self._pop_cell(fno, nx, ny, stack)
-        self.state["flags"].setdefault("monsters_dead", []).append(f"{fno}:{nx},{ny}")
+        opened = self._note_monster_death(fno, nx, ny)
         self.message = (f"打败了 {monster.get('name')},损血 {result.get('hero_damage', 0)},"
                         f"得 {result.get('gold', 0)} 金币")
-        if self._check_guard_doors():            # 杀光一组守卫 → 1005 怪物门自动开
+        if opened:                               # 杀光一组守卫 → 1005 怪物门自动开
             self.message += ";守卫清空,怪物门开了!"
         if monster.get("event") is not None:    # 杀怪触发的剧情(骷髅队长/魔王等)
             self._start_event(monster["event"])
+
+        if cell.get("id") == 133:               # 真身魔王:胜利结局
+            self.mode = "ending"
+            self.event_active = False
+            self.intent = None
+            return
 
         if hero["hp"] > 0 and not self._blocked(self.floor_doc()["grid"][ny][nx] or []):
             hero["pos"] = [nx, ny]              # 打赢了顺势走进这格(原版行为)
@@ -367,7 +414,7 @@ class Engine:
         """撞 NPC:查本层摆放表,把 npcs.json 条目交给事件适配器去聊。"""
         entry = self._npc_entry_at(nx, ny)
         if entry:
-            self.events.talk(entry, self.state)
+            self.events.talk(entry, self.state, npc_pos=(nx, ny))
             self._event_started()
             return
         # 摆放表里没有(纯装饰/剧情脚本用的 NPC 格):不响应
@@ -405,7 +452,7 @@ class Engine:
         # d) NPC 摆放点没画 NPC 格的(数据里有这种接线),走到格子上也算撞见
         entry = self._npc_entry_at(x, y)
         if entry:
-            self.events.talk(entry, self.state)
+            self.events.talk(entry, self.state, npc_pos=(x, y))
             self._event_started()
 
         # e) 每步后的特殊机制:巫师相邻魔伤 / 警卫夹击
@@ -442,6 +489,7 @@ class Engine:
             visited.append(new_floor)
         self.floor_doc(new_floor)               # 新层物化进缓存
         self.message = f"来到第 {new_floor} 层"
+        self._on_enter_floor(new_floor)
 
     def _battle_flags(self, x=None, y=None):
         """战斗开关(§4.4-B):道具三个由持有推导;first_attack 由楼层位置表决定。
@@ -509,6 +557,51 @@ class Engine:
                     opened = True
         return opened
 
+    def _note_monster_death(self, fno, x, y):
+        """杀怪统一台账(玩家亲手杀和事件/道具杀都必须流经这里):
+        记 monsters_dead → 查守卫门(1005)→ 查杀怪触发器(kill_triggers)。
+        先攻位置失效、守卫门自动开、49 层封印阵全靠这份台账,两个口径就会漏机制。
+        返回:守卫门有没有因此打开(给提示文案用)。"""
+        dead = self.state["flags"].setdefault("monsters_dead", [])
+        key = f"{fno}:{x},{y}"
+        if key not in dead:
+            dead.append(key)
+        opened = self._check_guard_doors()
+        self._check_kill_triggers(fno)
+        return opened
+
+    def _any_dead(self, fno, positions):
+        return any(f"{fno}:{x},{y}" in self.state["flags"].get("monsters_dead", [])
+                   for x, y in positions)
+
+    def _check_kill_triggers(self, fno):
+        """杀怪触发器(楼层 kill_triggers 字段,转换器从怪物层属性接线)。
+
+        两种形态(考古终审):
+        - {"event":id, "kill":[[x,y]...]}:kill 列表里的怪全死 → 触发事件;
+        - 带 "keep_alive":[[x,y]...] 的(49 层封印阵):keep_alive 里的怪
+          【先死了任何一个】→ 这个触发器永久作废(杀了守角的怪就破不了阵)。
+        触发过/作废过分别记进 flags(kill_triggers_done / _cancelled),
+        存档读档不重放。
+        """
+        doc = self.floor_doc(fno)
+        fired = self.state["flags"].setdefault("kill_triggers_done", [])
+        cancelled = self.state["flags"].setdefault("kill_triggers_cancelled", [])
+        for i, kt in enumerate(doc.get("kill_triggers") or []):
+            key = f"{fno}:{i}"
+            if key in fired or key in cancelled:
+                continue
+            if kt.get("keep_alive") and self._any_dead(fno, kt["keep_alive"]):
+                cancelled.append(key)          # 守角的怪死了:封印永久破不了
+                continue
+            if kt.get("kill") and self._all_dead(fno, kt["kill"]):
+                fired.append(key)
+                self._start_event(kt["event"])
+
+    def _all_dead(self, fno, positions):
+        dead = self.state["flags"].get("monsters_dead", [])
+        return all(f"{fno}:{x},{y}" in dead for x, y in positions)
+
     def _check_dead(self):
         if self.state["hero"]["hp"] <= 0:
             self.state["hero"]["hp"] = 0
@@ -522,6 +615,11 @@ class Engine:
         event = self.data["events"].get(str(event_id))
         if event is None:
             self.message = f"事件 {event_id} 不在事件表(数据问题)"
+            return
+        if self.event_active:
+            # 事件演到一半又触发新事件(杀怪触发器接力等):
+            # 直接换 runner 会把没演完的剧情丢掉,排队等当前事件演完
+            self._event_queue.append(event_id)
             return
         self.events.start(event, self.state)
         self._event_started()
@@ -540,6 +638,8 @@ class Engine:
             self.intent = None
             if self.mode == "dialog":
                 self.mode = "play"
+            if self._event_queue:                # 排队的事件接着演
+                self._start_event(self._event_queue.pop(0))
             return
         op = intent.get("op")
         if op == "chat":
@@ -689,6 +789,10 @@ class Engine:
             if key == pygame.K_ESCAPE:
                 self.running = False
             return
+        if self.mode == "ending":                # 通关画面:任意确认键谢幕
+            if key in CONFIRM_KEYS or key == pygame.K_ESCAPE:
+                self.running = False
+            return
         if self.mode == "dialog":
             self._key_dialog(key)
         elif self.mode == "menu":
@@ -701,8 +805,39 @@ class Engine:
                 self.try_move(dx, dy)
             elif key == pygame.K_h:
                 self.open_manual()
+            elif key == pygame.K_t:
+                self.open_tools()
             elif key == pygame.K_ESCAPE:
                 self.open_menu()
+
+    # ------------------------------------------------------------ 道具使用(T 键)
+
+    def open_tools(self):
+        """T 键:使用道具。菜单由事件适配器出(它知道哪些道具能主动用);
+        背包里没有可用道具时说一句,不开空菜单。"""
+        tools = self.events.usable_tools(self.state)
+        if not tools:
+            self.message = "没有能主动使用的道具(手册按 H,被动道具带上就生效)"
+            return
+        self.menu_stack = [{
+            "title": "使用道具",
+            "options": [label for _, label in tools],
+            "sel": 0,
+            "on_pick": lambda i: self._use_tool_pick(tools[i][0]),
+        }]
+        self.mode = "menu"
+
+    def _use_tool_pick(self, item_id):
+        """菜单里选中一件道具:事件适配器去用;开了 flow(选层传送)就进对话模式。"""
+        try:
+            result = self.events.use_tool(item_id, direction=self._last_dir)
+        except Exception as exc:                # 用坏了(数据/坐标问题)提示清楚,不崩
+            result = {"ok": False, "msg": f"道具用不了:{exc}"}
+        self.close_menu()
+        if isinstance(result, dict) and result.get("flow"):
+            self._event_started()
+        else:
+            self.message = (result or {}).get("msg", "") if isinstance(result, dict) else ""
 
     def _key_dialog(self, key):
         op = (self.intent or {}).get("op")
@@ -774,12 +909,7 @@ class Engine:
         had_monster = any(c.get("kind") == "monster" for c in old)
         has_monster = bool(new) and any(c.get("kind") == "monster" for c in new)
         if had_monster and not has_monster:
-            dead = self.state["flags"].setdefault("monsters_dead", [])
-            key = f"{floor}:{x},{y}"
-            if key not in dead:
-                dead.append(key)
-                # 事件/道具炸掉的守卫同样算数:顺手查守卫门该不该开
-                self._check_guard_doors()
+            self._note_monster_death(floor, x, y)
         self._record_change(floor, x, y)
 
     def api_spawn_monster(self, floor, x, y, monster_id):
@@ -803,6 +933,7 @@ class Engine:
             doc["grid"][y][x] = stack
         stack.append({"layer": "npc", "kind": "npc", "sprite_id": npc_id})
         self._record_change(floor, x, y)
+        self._save_placements(floor)
 
     def api_remove_npc(self, floor, x, y):
         """把某位置的 NPC 撤下场(摆放表删条目 + 弹掉格子上的 NPC 层)。"""
@@ -817,18 +948,21 @@ class Engine:
         if not stack:
             doc["grid"][y][x] = None
         self._record_change(floor, x, y)
+        self._save_placements(floor)
 
     def api_add_trigger(self, floor, x, y, event_id):
         """放一个"踩上去触发事件"的隐形格(事件摆放的机关)。"""
         doc = self.floor_doc(floor)
         doc.setdefault("triggers", []).append(
             {"x": x, "y": y, "event": event_id})
+        self._save_placements(floor)
 
     def api_remove_trigger(self, floor, x, y):
         """删掉某坐标的踩格触发器(一次性事件演完撤场)。"""
         doc = self.floor_doc(floor)
         doc["triggers"] = [t for t in doc.get("triggers", [])
                            if not (t["x"] == x and t["y"] == y)]
+        self._save_placements(floor)
 
     def api_move(self, floor, kind, from_pos, to_pos):
         """把一个东西挪一格(小偷走位等)。起止都是展平坐标 0~120。
@@ -905,6 +1039,12 @@ class Engine:
         if floor not in visited:
             visited.append(floor)
         self.floor_doc(floor)
+        self._on_enter_floor(floor)
+
+    def _on_enter_floor(self, floor):
+        """进层钩子:事件层登记的跨层挂起事件(meta.save=这层)在这层开演。"""
+        if self.events is not None and self.events.enter_floor(floor):
+            self._event_started()
 
     def _stair_landing(self, floor):
         """某层的"楼梯口"落点:优先 stair_links.up_stand,退回第一张上楼梯。"""
@@ -933,6 +1073,7 @@ class Engine:
         for placed in doc.get("npcs", []):
             if placed["x"] == x and placed["y"] == y:
                 placed["event_talk"] = None
+                self._save_placements(floor)
                 return
         raise ValueError(
             f"clear_npc_event:第 {floor} 层 ({x},{y}) 没有摆放 NPC,数据对不上")
@@ -1008,6 +1149,8 @@ class Engine:
             ui.draw_manual(self.screen, self.manual_rows, self.manual_sel)
         elif self.mode == "gameover":
             ui.draw_gameover(self.screen)
+        elif self.mode == "ending":
+            ui.draw_ending(self.screen, self.state["hero"])
         else:
             ui.draw_hint(self.screen, self.message or ui.DEFAULT_HINT)
         pygame.display.flip()

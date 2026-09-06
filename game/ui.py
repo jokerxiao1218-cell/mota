@@ -36,7 +36,7 @@ DIM = (150, 150, 160)
 HP_RED = (235, 100, 100)
 KEY_COLORS = {"yellow": (245, 210, 70), "blue": (90, 130, 240), "red": (230, 70, 70)}
 
-DEFAULT_HINT = "方向键/WASD 移动  H 怪物手册  Esc 菜单"
+DEFAULT_HINT = "方向键/WASD 移动  H 怪物手册  T 使用道具  Esc 菜单"
 
 # ---------------- 中文字体 ----------------
 # pygame 自带字体没有汉字,找系统里的 CJK 字体;一台都找不到就退回默认字体
@@ -278,3 +278,19 @@ def draw_gameover(screen):
     screen.blit(img, img.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 20)))
     img2 = text_img("按 Esc 退出游戏", 16, (255, 200, 200))
     screen.blit(img2, img2.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 30)))
+
+
+def draw_ending(screen, hero):
+    """通关画面(击败 50 层魔王真身)。忠实数据:原版到这里就结束了,
+    没有评分演出(设计文档 §9),只把通关时的战绩摆出来。"""
+    veil = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+    veil.fill((0, 40, 0, 150))
+    screen.blit(veil, (0, 0))
+    img = text_img("魔塔已被征服!", 40, GOLD)
+    screen.blit(img, img.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 40)))
+    stats = (f"生命 {hero.get('hp', 0)}   攻击 {hero.get('attack', 0)}"
+             f"   防御 {hero.get('defence', 0)}   金币 {hero.get('gold', 0)}")
+    img2 = text_img(stats, 16, TEXT)
+    screen.blit(img2, img2.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 16)))
+    img3 = text_img("按回车/Esc 谢幕", 13, DIM)
+    screen.blit(img3, img3.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 48)))

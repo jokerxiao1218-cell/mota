@@ -274,12 +274,14 @@ class EventRunner:
         if self._mode == "wait":
             return self._intent
 
-        # 跨层挂起:meta.save 指定的层还没到,本事件先不演(勘误第 4 条)
+        # 跨层挂起:meta.save 指定的层还没到,本事件先不演(勘误第 4 条)。
+        # intent 里带上自己的事件 id:引擎侧登记"到这层再演"要知道演谁
         save = (self.event.get("meta") or {}).get("save")
         if save is not None and save != self.state.get("floor"):
             self._mode = "pending"
             self._pending_floor = save
-            self._intent = {"op": "pending", "floor": save}
+            self._intent = {"op": "pending", "floor": save,
+                           "event": self.event.get("id")}
             return self._intent
 
         # 正常推进:一条一条往下演,直到需要玩家输入(返回意图)或演完

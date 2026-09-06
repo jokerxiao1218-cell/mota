@@ -343,7 +343,8 @@ def test_event8_save_equal_current_floor_runs(data):
     api2 = FakeApi()
     st2 = make_state(floor=23)
     runner2 = EventRunner(data["events"]["8"], st2, api2, data=data)
-    assert runner2.step() == {"op": "pending", "floor": 29}
+    # batch 6 契约扩展:pending 意图自带事件 id(引擎登记"到这层再演"要知道演谁)
+    assert runner2.step() == {"op": "pending", "floor": 29, "event": 8}
     assert api2.calls == [] and 8 not in st2["flags"]["events_done"]
 
 
@@ -533,7 +534,7 @@ def test_npc_thief_full_flow_chains_pending_event(data):
     flow = NpcFlow(21, st, data, api, npc_pos=(5, 1))
     intents = drive(flow, [None] * 3)
 
-    assert intents[-1] == {"op": "pending", "floor": 2}     # 事件 9 挂起到 2 层
+    assert intents[-1] == {"op": "pending", "floor": 2, "event": 9}  # 事件 9 挂起到 2 层(带 id:batch 6 契约)
     # 暗道门被拆、小偷从 (5,1)[=16] 走到 (5,10)[=115] 后消失
     assert any(c[:4] == ("set_cell", 29, 5, 2) and c[4] is None for c in api.calls)
     assert ("move", 29, "npc", 16, 115) in api.calls

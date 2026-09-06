@@ -131,23 +131,40 @@ class FakeRules:
 
 
 class FakeEvents:
-    """事件层替身:调用记录 + 可脚本化的 intent 队列。"""
+    """事件层替身:调用记录 + 可脚本化的 intent 队列。
+    方法集 = §4.4-C 契约的 batch 6 扩展版(talk 带 npc_pos、enter_floor、
+    usable_tools/use_tool);不做任何真实逻辑,只记调用、按脚本吐意图。"""
 
     def __init__(self):
         self.talks = []           # 撞过的 NPC 条目
+        self.talk_pos = []        # 撞到时的 NPC 位置
         self.altars = 0
         self.starts = []          # 启动过的事件条目
         self.feeds = []           # feed 过的响应
         self.script = []          # step() 依次吐这些,吐完就是 done
+        self.entered = []         # 进层钩子收到过的层号
+        self.tools_used = []      # use_tool 收到过的 (道具id, 方向)
 
-    def talk(self, npc, state):
+    def talk(self, npc, state, npc_pos=None):
         self.talks.append(npc)
+        self.talk_pos.append(npc_pos)
 
     def altar_flow(self, state):
         self.altars += 1
 
     def start(self, event, state):
         self.starts.append(event)
+
+    def usable_tools(self, state):
+        return []
+
+    def use_tool(self, item_id, direction=None):
+        self.tools_used.append((item_id, direction))
+        return {"ok": False, "msg": ""}
+
+    def enter_floor(self, floor):
+        self.entered.append(floor)
+        return False
 
     def step(self):
         if self.script:
