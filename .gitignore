@@ -1,0 +1,8 @@
+# Python 虚拟环境与缓存
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 游戏存档(玩家本地数据,不进版本库)
+save/
