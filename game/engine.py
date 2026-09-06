@@ -1,0 +1,794 @@
+"""引擎层:pygame 主循环 + 键盘输入 + 移动结算 + 渲染调度。
+
+架构约束(多智能体并行开发的关键,设计文档 §4.4):
+core(规则层)和 events(事件层)由另外两个智能体同时开发、现在还不存在,
+所以本文件【绝不 import game.core / game.events】,一切调用走"适配器注入"——
+engine.py 只定义两个最小接口 RulesAdapter / EventsAdapter(方法签名 = §4.4-B/C),
+引擎通过构造参数收到适配器实例;真实模块由 main.py 延迟 import 后拼装注入。
+测试用 Fake 适配器喂固定返回值,这就是"模拟测试"。
+
+移动结算顺序(设计文档 §4.4-D):
+a. 目标格是叠放栈,任一层不可通行就阻挡,只跟最上层(stack[-1])交互:
+   墙→不动;黄/蓝/红门→查对应钥匙;墙门(1006)→一撞就开;
+   监狱门(1004)/怪物门(1005)→只挡路,等事件/守卫;
+b. 撞怪:calc_battle 预判,打不过→移动拒绝;打得过→扣血杀怪、弹栈、金币+;
+c. 道具:apply_pickup 后弹栈;
+d. 楼梯:landing_resolver 换层(落点规则见 default_landing_resolver);
+e. NPC 格/踩格触发器/祭坛 → 调注入的 events 适配器;
+f. 每步后:adjacent_damage(巫师魔伤)/ guard_trap(警卫夹击)。
+"""
+
+import copy
+
+import pygame
+
+from game import assets as assets_mod
+from game import ui
+
+GRID = 11                 # 地图 11×11
+FPS = 60
+
+# 方向键 / WASD 都能走格子
+KEY_DIRS = {
+    pygame.K_UP: (0, -1), pygame.K_w: (0, -1),
+    pygame.K_DOWN: (0, 1), pygame.K_s: (0, 1),
+    pygame.K_LEFT: (-1, 0), pygame.K_a: (-1, 0),
+    pygame.K_RIGHT: (1, 0), pygame.K_d: (1, 0),
+}
+CONFIRM_KEYS = (pygame.K_SPACE, pygame.K_RETURN, pygame.K_KP_ENTER)
+
+# 门 id → (state 里钥匙名, 中文名);只有这三种是钥匙门
+KEY_DOORS = {1001: ("yellow", "黄"), 1002: ("blue", "蓝"), 1003: ("red", "红")}
+
+
+# ================================================================ 适配器契约
+# 下面两个类是"接口说明书":真实实现不强制继承,但方法名和参数必须对上。
+# 集成阶段(main.py)负责把 game.core / game.events 包成这两个接口的实例。
+
+
+class RulesAdapter:
+    """规则层适配器:签名 = 设计文档 §4.4-B(引擎只用到其中这些)。
+
+    - new_state() -> dict               开局状态(400/10/10 金0;出生坐标由接线填)
+    - calc_battle(hero, monster, flags) -> {"can_fight":bool, "hero_damage":int,
+      "turns":int, "gold":int}          纯函数预判战斗;gold 已含幸运金币倍数
+    - apply_pickup(state, item_id, item) -> dict
+                                        拾取结算(血瓶宝石×区域、武器盾取最高级、钥匙计数);
+                                        item_id 为道具数字 id,item 为 items.json 里该道具条目
+    - adjacent_damage(state, floor_doc, x, y) -> int
+                                        巫师相邻魔伤合计(持神圣盾=0);floor_doc 是
+                                        运行时楼层文档(引擎已把 grid 换成当前实际格子,
+                                        规则层要挪巫师位置可直接改 floor_doc["grid"])
+    - guard_trap(state, floor_doc, x, y) -> dict
+                                        警卫夹击(HP 向上取整减半),原地修改并返回 state
+    - save_game(state, slot)            存档(save/save_N.json);失败抛异常(带原因)
+    - load_game(slot) -> dict           读档;坏档抛异常(带文件名)
+    """
+
+    def new_state(self):
+        raise NotImplementedError
+
+    def calc_battle(self, hero, monster, flags):
+        raise NotImplementedError
+
+    def apply_pickup(self, state, item_id, item):
+        raise NotImplementedError
+
+    def adjacent_damage(self, state, floor_doc, x, y):
+        raise NotImplementedError
+
+    def guard_trap(self, state, floor_doc, x, y):
+        raise NotImplementedError
+
+    def save_game(self, state, slot):
+        raise NotImplementedError
+
+    def load_game(self, slot):
+        raise NotImplementedError
+
+
+class EventsAdapter:
+    """事件层适配器:签名按设计文档 §4.4-C 的 intent 协议。
+
+    - talk(npc, state)        撞 NPC:npc 为 npcs.json 条目(纯 dict);
+                              适配器内部决定纯聊天还是跑 npc["event"]
+    - altar_flow(state)       撞祭坛(4/12/32/46 层商店)
+    - start(event, state)     启动事件:event 为 events.json 条目(纯 dict)
+    - step() -> intent        取当前意图:{"op":"chat","lines":[...]} /
+                              {"op":"choices","options":[{"label":...},...]} /
+                              {"op":"done"};没在跑事件时返回 None 或 done
+    - feed(response)          chat 喂 None(按键推进);choices 喂 0 起的选择序号
+    """
+
+    def talk(self, npc, state):
+        raise NotImplementedError
+
+    def altar_flow(self, state):
+        raise NotImplementedError
+
+    def start(self, event, state):
+        raise NotImplementedError
+
+    def step(self):
+        raise NotImplementedError
+
+    def feed(self, response):
+        raise NotImplementedError
+
+
+# ================================================================ 楼梯落点
+
+
+class LandingError(Exception):
+    """换层失败(前面没路/目标层缺落点),引擎捕住后给玩家提示,不崩。"""
+
+
+def default_landing_resolver(data):
+    """造一个默认落点函数(签名:floor, direction -> (新层号, x, y))。
+
+    规则(勘误终审):踩楼梯 → 新层 = 当前层 + stair_links 里对应的 diff;
+    上楼落在【新层的 down_stand】,下楼落在【新层的 up_stand】。
+    特例:43 层上梯 diff=+2(绕过 44 层异空间),45 层下梯 diff=-2。
+
+    楼层 JSON 还在并行补写 stair_links 时,退回老兜底:
+    新层找反向楼梯,再不行找任意楼梯,都没有 → LandingError。
+    集成阶段若接线"真实落点",直接传自定义 resolver 覆盖本函数。
+    """
+
+    def resolve(floor, direction):
+        src = data["floors"].get(str(floor), {})
+        links = src.get("stair_links") or {}
+        if direction == "up":
+            diff = links.get("up_diff", 1)
+            stand_key = "down_stand"
+        else:
+            diff = links.get("down_diff", -1)
+            stand_key = "up_stand"
+
+        target = floor + diff
+        tgt = data["floors"].get(str(target))
+        if tgt is None:
+            raise LandingError(
+                f"第 {floor} 层向{'上' if direction == 'up' else '下'}没有路(第 {target} 层不存在)")
+
+        tlinks = tgt.get("stair_links") or {}
+        stand = tlinks.get(stand_key)
+        if stand:
+            return target, stand[0], stand[1]
+
+        # ---- 数据还没写 stair_links:老规则兜底 ----
+        want = "down" if direction == "up" else "up"
+        for s in tgt.get("stairs", []):
+            if s["dir"] == want:
+                return target, s["x"], s["y"]
+        for s in tgt.get("stairs", []):          # 单楼梯层(如序章 f0→f1)
+            return target, s["x"], s["y"]
+        raise LandingError(f"第 {target} 层没有任何楼梯,落不了地")
+
+    return resolve
+
+
+# ================================================================ 引擎主体
+
+
+class Engine:
+    """游戏引擎:一个实例 = 一局游戏。测试里直接调 try_move/handle_key,不必开主循环。"""
+
+    def __init__(self, data, rules, events, state,
+                 screen=None, landing_resolver=None):
+        self.data = data
+        self.rules = rules            # RulesAdapter
+        self.events = events          # EventsAdapter
+        self.state = state            # 纯 dict 状态(§4.4-A)
+        self.assets = assets_mod.Assets(data)
+        self.screen = screen          # None 时只在 run() 里建窗口;测试可不传
+        self.landing_resolver = landing_resolver or default_landing_resolver(data)
+
+        self._runtime = {}            # 层号(str) -> 运行时楼层文档(grid 是可变副本)
+        self._weakened = {}           # 怪物id(str) -> 倍率(49 层封印用)
+
+        self.mode = "play"            # play / dialog / menu / manual / gameover
+        self.event_active = False     # events 适配器有没有事件在跑
+        self.intent = None            # 当前要渲染的 intent(chat/choices)
+        self.choice_sel = 0
+        self.message = ""            # 底部提示条文本
+        self.menu_stack = []          # Esc 菜单栈(支持"存档→选槽位"两级)
+        self.manual_rows = []
+        self.manual_sel = 0
+        self.running = False
+
+        self.floor_doc()              # 开局就把当前层物化进运行时缓存
+
+    # ------------------------------------------------------------ 楼层运行时
+
+    def floor_doc(self, floor=None):
+        """拿"运行时楼层文档":结构与楼层 JSON 相同,但 grid 是深拷贝的可变副本,
+        并且已经叠加 state['floors_state'] 记录过的改动(读档恢复也靠它)。"""
+        fno = self.state["floor"] if floor is None else floor
+        key = str(fno)
+        if key not in self._runtime:
+            src = self.data["floors"][key]
+            grid = copy.deepcopy(src["grid"])
+            for x, y, stack in self.state.get("floors_state", {}).get(key, []):
+                grid[y][x] = copy.deepcopy(stack)
+            doc = dict(src)                 # 其余字段共用引用,只有 grid 是自己的
+            doc["grid"] = grid
+            self._runtime[key] = doc
+        return self._runtime[key]
+
+    def _record_change(self, fno, x, y):
+        """格子栈变了就记进 state['floors_state'](存档=整包快照的靠山)。"""
+        key = str(fno)
+        stack = self.floor_doc(fno)["grid"][y][x]
+        entry = [x, y, copy.deepcopy(stack)]
+        lst = self.state.setdefault("floors_state", {}).setdefault(key, [])
+        for ent in lst:
+            if ent[0] == x and ent[1] == y:     # 同一格只留最新
+                ent[2] = entry[2]
+                return
+        lst.append(entry)
+
+    def _pop_cell(self, fno, x, y, stack):
+        """弹掉栈顶(开门/杀怪/捡东西共用):栈空了就把格子置 None。"""
+        if stack:
+            stack.pop()
+        if not stack:
+            self.floor_doc(fno)["grid"][y][x] = None
+        self._record_change(fno, x, y)
+
+    def _monster(self, mid):
+        """取怪物表条目;被 weaken(49 层封印)过的返回缩水副本,不动原数据。"""
+        entry = self.data["monsters"].get(str(mid), {})
+        ratio = self._weakened.get(str(mid))
+        if ratio is None or not entry:
+            return entry
+        weakened = dict(entry)
+        for field in ("hp", "attack", "defence"):
+            if field in weakened:
+                weakened[field] = int(weakened[field] * ratio)
+        return weakened
+
+    # ------------------------------------------------------------ 走格子
+
+    def _walkable(self, cell):
+        """一格可不可通行:查 tiles 表;没登记过的 kind 一律当作不可通行(安全第一)。"""
+        kind = cell.get("kind")
+        meta = self.data["tiles"]["kinds"].get(kind)
+        return bool(meta and meta.get("walkable"))
+
+    def _blocked(self, stack):
+        """叠放栈里【任何一层】不可通行,整格就算挡路(门下压着道具也进不去)。"""
+        return any(not self._walkable(cell) for cell in stack)
+
+    def try_move(self, dx, dy):
+        """朝 (dx,dy) 走一格:先判阻挡,阻挡就跟栈顶交互;能走就结算到达效果。"""
+        if self.mode != "play":
+            return
+        hero = self.state["hero"]
+        x, y = hero["pos"]
+        nx, ny = x + dx, y + dy
+        if not (0 <= nx < GRID and 0 <= ny < GRID):
+            return
+        stack = self.floor_doc()["grid"][ny][nx] or []
+        if self._blocked(stack):
+            self._interact(nx, ny, stack)
+            return
+        hero["pos"] = [nx, ny]
+        self._arrive(nx, ny)
+
+    def _interact(self, nx, ny, stack):
+        """撞上了:只跟最上层交互。"""
+        cell = stack[-1]
+        if cell.get("hide"):                    # 隐藏格:不可交互(踩楼梯也不换层)
+            return
+        kind = cell.get("kind")
+        if kind == "door":
+            self._bump_door(nx, ny, stack)
+        elif kind == "monster":
+            self._bump_monster(nx, ny, stack)
+        elif kind == "npc":
+            self._bump_npc(nx, ny)
+        elif kind == "altar":
+            self._bump_altar()
+        # 墙/岩浆/其他:不动,也没动静
+
+    def _bump_door(self, nx, ny, stack):
+        """撞门分派(勘误终审):
+        1001/1002/1003=钥匙门;1006 墙门=一撞就开;1004/1005=只挡路等事件/守卫。"""
+        fno = self.state["floor"]
+        cell = stack[-1]
+        did = cell.get("id")
+
+        if did == 1006:                        # 墙门:假墙,撞开露出下层
+            self._pop_cell(fno, nx, ny, stack)
+            self.message = "撞开了一道暗门!"
+            return
+
+        if did in KEY_DOORS:                    # 钥匙门
+            key_name, cn = KEY_DOORS[did]
+            keys = self.state["hero"]["keys"]
+            if keys.get(key_name, 0) > 0:
+                keys[key_name] -= 1
+                self._pop_cell(fno, nx, ny, stack)
+                self.message = f"用一把{cn}钥匙打开了{cn}门"
+            else:
+                self.message = f"需要一把{cn}钥匙"
+            return
+
+        # 监狱门(1004,事件生成)/ 怪物门(1005,杀光守卫自动开):引擎只挡路
+        name = self.data["tiles"]["doors"].get(str(did), {}).get("name", "门")
+        self.message = f"{name}打不开(得想别的办法)"
+
+    def _bump_monster(self, nx, ny, stack):
+        """撞怪:预判 → 打得过就结算(扣血/弹栈/金币),打不过原地不动。"""
+        hero = self.state["hero"]
+        fno = self.state["floor"]
+        cell = stack[-1]
+        monster = self._monster(cell.get("id"))
+        if not monster:
+            return
+        result = self.rules.calc_battle(hero, monster, self._battle_flags())
+        if not result.get("can_fight"):
+            self.message = f"打不过 {monster.get('name', '怪物')},先绕开它吧"
+            return
+
+        hero["hp"] -= result.get("hero_damage", 0)
+        hero["gold"] += result.get("gold", 0)
+        self._pop_cell(fno, nx, ny, stack)
+        self.state["flags"].setdefault("monsters_dead", []).append(f"{fno}:{nx},{ny}")
+        self.message = (f"打败了 {monster.get('name')},损血 {result.get('hero_damage', 0)},"
+                        f"得 {result.get('gold', 0)} 金币")
+        if monster.get("event") is not None:    # 杀怪触发的剧情(骷髅队长/魔王等)
+            self._start_event(monster["event"])
+
+        if hero["hp"] > 0 and not self._blocked(self.floor_doc()["grid"][ny][nx] or []):
+            hero["pos"] = [nx, ny]              # 打赢了顺势走进这格(原版行为)
+            self._arrive(nx, ny)
+        self._check_dead()
+
+    def _bump_npc(self, nx, ny):
+        """撞 NPC:查本层摆放表,把 npcs.json 条目交给事件适配器去聊。"""
+        doc = self.floor_doc()
+        for placed in doc.get("npcs", []):
+            if placed["x"] == nx and placed["y"] == ny:
+                entry = self.data["npcs"].get(str(placed["npc"]))
+                if entry:
+                    self.events.talk(entry, self.state)
+                    self._event_started()
+                return
+        # 摆放表里没有(纯装饰/剧情脚本用的 NPC 格):不响应
+
+    def _bump_altar(self):
+        """撞祭坛(4/12/32/46 层商店):交给事件适配器。"""
+        self.events.altar_flow(self.state)
+        self._event_started()
+
+    def _arrive(self, x, y):
+        """走到 (x,y) 后的结算:捡道具 → 楼梯换层 → 踩格触发器/NPC → 特殊机制。"""
+        doc = self.floor_doc()
+        grid = doc["grid"]
+        stack = grid[y][x] or []
+
+        # a) 顶上是道具就捡(可能连着叠几个)
+        while stack and stack[-1].get("kind") == "prop" and not stack[-1].get("hide"):
+            prop = stack[-1]
+            item = self.data["items"].get(str(prop.get("id")), {})
+            self.state = self.rules.apply_pickup(self.state, prop.get("id"), item)
+            self._pop_cell(self.state["floor"], x, y, stack)
+            self.message = f"获得 {item.get('name', '未知道具')}"
+
+        # b) 楼梯:换层(隐藏楼梯踩了不换层)
+        if stack and stack[-1].get("kind") == "stair" and not stack[-1].get("hide"):
+            self._land(stack[-1].get("dir", "up"))
+            return                              # 换层后本层剩余结算不再做
+
+        # c) 踩格触发器
+        for trig in doc.get("triggers", []):
+            if trig["x"] == x and trig["y"] == y:
+                self._start_event(trig["event"])
+
+        # d) NPC 摆放点没画 NPC 格的(数据里有这种接线),走到格子上也算撞见
+        for placed in doc.get("npcs", []):
+            if placed["x"] == x and placed["y"] == y:
+                entry = self.data["npcs"].get(str(placed["npc"]))
+                if entry:
+                    self.events.talk(entry, self.state)
+                    self._event_started()
+
+        # e) 每步后的特殊机制:巫师相邻魔伤 / 警卫夹击
+        self._post_step(x, y)
+
+    def _post_step(self, x, y):
+        doc = self.floor_doc()
+        hero = self.state["hero"]
+        dmg = self.rules.adjacent_damage(self.state, doc, x, y)
+        if dmg:
+            hero["hp"] -= dmg
+            self.message = f"被魔法击中,损失 {dmg} 生命"
+        self.state = self.rules.guard_trap(self.state, doc, x, y)
+        self._check_dead()
+
+    def _land(self, direction):
+        """踩楼梯换层。"""
+        try:
+            result = self.landing_resolver(self.state["floor"], direction)
+        except LandingError as exc:
+            self.message = str(exc)
+            return
+        if result is None:
+            self.message = "这条路走不通"
+            return
+        new_floor, x, y = result
+        self.state["floor"] = new_floor
+        self.state["hero"]["pos"] = [x, y]
+        visited = self.state.setdefault("visited", [])
+        if new_floor not in visited:
+            visited.append(new_floor)
+        self.floor_doc(new_floor)               # 新层物化进缓存
+        self.message = f"来到第 {new_floor} 层"
+
+    def _battle_flags(self):
+        """战斗开关(§4.4-B):由持有道具推导。"""
+        props = self.state["hero"].get("props", {})
+        return {
+            "cross": "28" in props,             # 十字架
+            "lucky_coin": "27" in props,        # 幸运金币
+            "dragon_slayer": "29" in props,     # 屠龙匕
+        }
+
+    def _check_dead(self):
+        if self.state["hero"]["hp"] <= 0:
+            self.state["hero"]["hp"] = 0
+            self.mode = "gameover"
+            self.event_active = False
+            self.intent = None
+
+    # ------------------------------------------------------------ 事件推进
+
+    def _start_event(self, event_id):
+        event = self.data["events"].get(str(event_id))
+        if event is None:
+            self.message = f"事件 {event_id} 不在事件表(数据问题)"
+            return
+        self.events.start(event, self.state)
+        self._event_started()
+
+    def _event_started(self):
+        self.event_active = True
+        self._poll_intent()
+
+    def _poll_intent(self):
+        """向事件适配器要当前意图:chat/choices 就进入对话模式;done 就回到游玩。"""
+        if not self.event_active:
+            return
+        intent = self.events.step()
+        if intent is None or intent.get("op") == "done":
+            self.event_active = False
+            self.intent = None
+            if self.mode == "dialog":
+                self.mode = "play"
+            return
+        op = intent.get("op")
+        if op == "chat":
+            self.intent = intent
+            self.mode = "dialog"
+        elif op == "choices":
+            self.intent = intent
+            self.choice_sel = 0
+            self.mode = "dialog"
+        else:                                   # 未知意图:明确提示,不许静默吞
+            self.message = f"未知事件意图:{op!r}(事件层与引擎协议没对齐?)"
+            self.event_active = False
+            self.intent = None
+            if self.mode == "dialog":
+                self.mode = "play"
+
+    # ------------------------------------------------------------ Esc 菜单
+
+    def open_menu(self):
+        self.menu_stack = [{
+            "title": "魔塔 50 层",
+            "options": ["存档", "读档", "回到游戏", "退出游戏"],
+            "sel": 0,
+            "on_pick": self._menu_root_pick,
+        }]
+        self.mode = "menu"
+
+    def _menu_root_pick(self, idx):
+        if idx == 0:                             # 存档 → 选槽位
+            self.menu_stack.append({
+                "title": "存档到哪个槽位?",
+                "options": ["槽位 1", "槽位 2", "槽位 3"],
+                "sel": 0,
+                "on_pick": lambda i: self._do_save(i + 1),
+            })
+        elif idx == 1:                           # 读档 → 选槽位
+            self.menu_stack.append({
+                "title": "读取哪个槽位?",
+                "options": ["槽位 1", "槽位 2", "槽位 3"],
+                "sel": 0,
+                "on_pick": lambda i: self._do_load(i + 1),
+            })
+        elif idx == 2:
+            self.close_menu()
+        else:
+            self.close_menu()
+            self.running = False
+
+    def close_menu(self):
+        self.menu_stack = []
+        if self.mode == "menu":
+            self.mode = "play"
+
+    def _do_save(self, slot):
+        try:
+            self.rules.save_game(copy.deepcopy(self.state), slot)
+            self.message = f"已存档到槽位 {slot}"
+        except Exception as exc:                 # 没手册/写盘失败都走这里,给清晰提示
+            self.message = f"存档失败:{exc}"
+        self.close_menu()
+
+    def _do_load(self, slot):
+        try:
+            loaded = self.rules.load_game(slot)
+            if not self._valid_state(loaded):
+                raise ValueError("存档内容不是有效的游戏状态")
+        except Exception as exc:
+            self.message = f"读档失败:{exc}"
+            self.close_menu()
+            return
+        self.state = loaded
+        self._runtime = {}                       # 楼层缓存全部作废,按新状态重建
+        self.event_active = False
+        self.intent = None
+        self.close_menu()
+        self.floor_doc()
+        self.message = f"已读取槽位 {slot}"
+
+    @staticmethod
+    def _valid_state(state):
+        """读档最基本的形状检查,坏数据不让进引擎。"""
+        try:
+            return (isinstance(state, dict)
+                    and isinstance(state["hero"], dict)
+                    and isinstance(state["hero"]["pos"], list)
+                    and len(state["hero"]["pos"]) == 2
+                    and isinstance(state["floor"], int))
+        except (KeyError, TypeError):
+            return False
+
+    # ------------------------------------------------------------ 怪物手册
+
+    def open_manual(self):
+        """H 键:必须持有怪物手册(道具 18)才能看。"""
+        if "18" not in self.state["hero"].get("props", {}):
+            self.message = "你没有怪物手册(3 层老人送的),看不了"
+            return
+        rows, seen = [], set()
+        for row in self.floor_doc()["grid"]:
+            for stack in row:
+                if not stack:
+                    continue
+                for cell in stack:
+                    if cell.get("kind") != "monster" or cell.get("hide"):
+                        continue
+                    mid = cell.get("id")
+                    if mid in seen:
+                        continue
+                    seen.add(mid)
+                    monster = self._monster(mid)
+                    if not monster:
+                        continue
+                    result = self.rules.calc_battle(
+                        self.state["hero"], monster, self._battle_flags())
+                    if result.get("can_fight"):
+                        verdict = f"损血{result.get('hero_damage', 0)}/{result.get('turns', 0)}回合"
+                    else:
+                        verdict = "打不过"
+                    rows.append({
+                        "name": monster.get("name", "?"),
+                        "hp": monster.get("hp", 0),
+                        "attack": monster.get("attack", 0),
+                        "defence": monster.get("defence", 0),
+                        "gold": monster.get("gold", 0),
+                        "verdict": verdict,
+                    })
+        rows.sort(key=lambda r: (r["attack"], r["hp"]))
+        self.manual_rows = rows
+        self.manual_sel = 0
+        self.mode = "manual"
+
+    # ------------------------------------------------------------ 按键分派
+
+    def handle_key(self, key):
+        """一个按键 = 一个动作。测试直接调这个函数驱动,不用真开窗口。"""
+        if self.mode == "gameover":
+            if key == pygame.K_ESCAPE:
+                self.running = False
+            return
+        if self.mode == "dialog":
+            self._key_dialog(key)
+        elif self.mode == "menu":
+            self._key_menu(key)
+        elif self.mode == "manual":
+            self._key_manual(key)
+        else:
+            if key in KEY_DIRS:
+                dx, dy = KEY_DIRS[key]
+                self.try_move(dx, dy)
+            elif key == pygame.K_h:
+                self.open_manual()
+            elif key == pygame.K_ESCAPE:
+                self.open_menu()
+
+    def _key_dialog(self, key):
+        op = (self.intent or {}).get("op")
+        if op == "chat":
+            if key in CONFIRM_KEYS or key == pygame.K_ESCAPE:
+                self.events.feed(None)
+                self._poll_intent()
+        elif op == "choices":
+            options = self.intent.get("options", [])
+            if not options:
+                return
+            if key in (pygame.K_UP, pygame.K_w):
+                self.choice_sel = max(0, self.choice_sel - 1)
+            elif key in (pygame.K_DOWN, pygame.K_s):
+                self.choice_sel = min(len(options) - 1, self.choice_sel + 1)
+            elif pygame.K_1 <= key <= pygame.K_9:    # 数字键直达
+                idx = key - pygame.K_1
+                if idx < len(options):
+                    self.choice_sel = idx
+            elif key in CONFIRM_KEYS:
+                self.events.feed(self.choice_sel)
+                self._poll_intent()
+
+    def _key_menu(self, key):
+        menu = self.menu_stack[-1]
+        options = menu["options"]
+        if key in (pygame.K_UP, pygame.K_w):
+            menu["sel"] = max(0, menu["sel"] - 1)
+        elif key in (pygame.K_DOWN, pygame.K_s):
+            menu["sel"] = min(len(options) - 1, menu["sel"] + 1)
+        elif key in CONFIRM_KEYS:
+            pick = menu.get("on_pick")
+            if pick:
+                pick(menu["sel"])
+        elif key == pygame.K_ESCAPE:
+            self.menu_stack.pop()
+            if not self.menu_stack:
+                self.close_menu()
+
+    def _key_manual(self, key):
+        if key in (pygame.K_UP, pygame.K_w):
+            self.manual_sel = max(0, self.manual_sel - 1)
+        elif key in (pygame.K_DOWN, pygame.K_s):
+            self.manual_sel = min(max(0, len(self.manual_rows) - 1), self.manual_sel + 1)
+        elif key in (pygame.K_ESCAPE, pygame.K_h):
+            self.mode = "play"
+
+    # ------------------------------------------------------------ 事件层的 api
+    # 设计文档 §4.4-C:事件解释器需要引擎回调(get_floor/set_cell/...)。
+    # 集成时 main.py 把 build_api() 的返回值递给 EventRunner。
+
+    def api_get_floor(self, floor):
+        """某层当前实际格子(11×11 栈数组,含已被打开的门/被杀的怪的变化)。"""
+        return self.floor_doc(floor)["grid"]
+
+    def api_set_cell(self, floor, x, y, stack):
+        """事件直接改某格的栈(stack=None 表示清空)。"""
+        if not (0 <= x < GRID and 0 <= y < GRID):
+            raise ValueError(f"set_cell 坐标越界:{(x, y)}")
+        grid = self.floor_doc(floor)["grid"]
+        grid[y][x] = copy.deepcopy(stack) if stack else None
+        self._record_change(floor, x, y)
+
+    def api_spawn_monster(self, floor, x, y, monster_id):
+        """在某格栈顶冒一只怪(appear 动作)。"""
+        grid = self.floor_doc(floor)["grid"]
+        stack = grid[y][x]
+        if stack is None:
+            stack = []
+            grid[y][x] = stack
+        stack.append({"layer": "monster", "kind": "monster",
+                      "id": monster_id, "sprite": f"{monster_id}_0"})
+        self._record_change(floor, x, y)
+
+    def api_weaken(self, monster_id, ratio):
+        """削弱某种怪(49 层封印:假魔王 ×0.1)。"""
+        self._weakened[str(monster_id)] = float(ratio)
+
+    def api_change_floor(self, floor, x, y):
+        """事件传送/change_floor:把勇士扔到某层某格。"""
+        self.state["floor"] = floor
+        self.state["hero"]["pos"] = [x, y]
+        visited = self.state.setdefault("visited", [])
+        if floor not in visited:
+            visited.append(floor)
+        self.floor_doc(floor)
+
+    def build_api(self):
+        """给事件层的回调字典(§4.4-C 的 api)。"""
+        return {
+            "get_floor": self.api_get_floor,
+            "set_cell": self.api_set_cell,
+            "spawn_monster": self.api_spawn_monster,
+            "weaken": self.api_weaken,
+            "change_floor": self.api_change_floor,
+        }
+
+    # ------------------------------------------------------------ 渲染
+
+    def _hud(self):
+        """把状态栏要显示的字段整理成纯 dict(界面层不碰游戏数据结构)。"""
+        hero = self.state["hero"]
+        items = self.data["items"]
+
+        def prop_name(pid):
+            return items.get(str(pid), {}).get("name", f"道具{pid}")
+
+        return {
+            "hp": hero["hp"], "attack": hero["attack"],
+            "defence": hero["defence"], "gold": hero["gold"],
+            "keys": hero["keys"], "floor": self.state["floor"],
+            "sword": prop_name(hero["sword"]) if hero.get("sword") else None,
+            "shield": prop_name(hero["shield"]) if hero.get("shield") else None,
+            "props": [prop_name(pid) for pid in hero.get("props", {})],
+            "pos": hero["pos"],
+        }
+
+    def _view(self):
+        """11×11 的"每格最上层可见物"(跳过 hide 的隐藏格)。"""
+        view = []
+        for row in self.floor_doc()["grid"]:
+            line = []
+            for stack in row:
+                top = None
+                for cell in reversed(stack or []):   # 从顶往下找第一个可见的
+                    if not cell.get("hide"):
+                        top = cell
+                        break
+                line.append(top)
+            view.append(line)
+        return view
+
+    def draw(self):
+        """画一帧。测试里传个 Surface 进来就能冒烟。"""
+        if self.screen is None:
+            return
+        ui.draw_frame(self.screen, self._hud(), self._view(), self.assets)
+        if self.mode == "dialog" and self.intent:
+            if self.intent.get("op") == "chat":
+                ui.draw_chat(self.screen, self.intent.get("lines", []))
+            else:
+                ui.draw_choices(self.screen, self.intent.get("options", []),
+                                self.choice_sel)
+        elif self.mode == "menu" and self.menu_stack:
+            ui.draw_menu(self.screen, self.menu_stack[-1])
+        elif self.mode == "manual":
+            ui.draw_manual(self.screen, self.manual_rows, self.manual_sel)
+        elif self.mode == "gameover":
+            ui.draw_gameover(self.screen)
+        else:
+            ui.draw_hint(self.screen, self.message or ui.DEFAULT_HINT)
+        pygame.display.flip()
+
+    # ------------------------------------------------------------ 主循环
+
+    def run(self):
+        """开窗口跑 60FPS 主循环(QUIT/KEYDOWN 事件泵)。"""
+        pygame.init()
+        if self.screen is None:
+            self.screen = ui.create_screen()
+        pygame.display.set_caption("魔塔 50 层")
+        clock = pygame.time.Clock()
+        self.running = True
+        while self.running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    self.handle_key(event.key)
+            self._poll_intent()
+            self.draw()
+            clock.tick(FPS)
