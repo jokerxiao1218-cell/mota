@@ -4,9 +4,16 @@
 - 数值校正依据设计文档附录 A(原版 TSW.exe 提取的权威表;tacthgin 存在 3 处金币抄录错误)
 - 格子为【叠放栈】:同一格可叠多层(墙门压着道具="十字架藏墙内"、楼梯上站怪挡路、
   hide 属性隐藏整格),按 TMX 文件内图层顺序自下而上叠放,层名/层id一并保留
-- 层属性(properties)已机械解码的部分:npc 层(pos→NPC id)= NPC 摆放表;
-  event 层(pos→事件 id)= 踩格触发器。其余(door 机关/stair 落点/hide/firstAttack/
-  monsterMove/monsterEvent 等)原样收进 layer_props,由引擎源码考古结果在集成阶段接线
+- 层属性(properties)语义物化(v5,上游 ParserFactory/DoorSystem/MoveSystem 考据):
+  * npc 层 {位置:NPC id} = NPC 摆放表;event 层 {位置:事件 id} = 踩格触发器
+  * hide(各层)= 该层该格"幽灵化":不可见、可穿越、不可交互,等事件 show 显现
+  * appear/appearEvent(门层)= 隐形但【挡路】的门:撞一下显形,显形后永远是墙
+    (f23 隐形墙迷宫 / f33 暗墙);appearEvent 另记楼层字段:全撞现→触发事件
+  * passive(门层)= 撞不开的墙门:等小偷挖/杀怪解锁/守卫门(解除途径见语义报告)
+  * monsterCondition(门层)→ 楼层字段 door_unlocks:杀掉某格的怪 → 对应门解锁
+  * wallShow(门层)→ 楼层字段 wall_shows:撞开假墙 → 显现指定格藏着的元素
+  * monsterMove(怪层)= 格子标记 monster_move:吃魔伤时该怪镜像瞬移(f47 巫师)
+  * disappearEvent(门层)→ 楼层字段:开钥匙门记账,开错=永久作废,开齐=触发事件
 - 事件按 step 物化为顺序动作列表,原样携带数据
 - 重跑安全:输出每次整体重建
 
@@ -29,10 +36,14 @@ GOLD_FIX = {110: 22, 111: 18, 120: 100}  # 高级法师 / 兽人 / 中级卫兵
 CROSS_TARGETS = [111, 112, 115]          # 兽人 / 兽人武士 / 吸血鬼
 DRAGON_TARGETS = [122]                   # 魔龙
 
-# ---- 事件触发表(TODO:语义报告补充非踩格类触发,如进层自动触发;事件id -> 触发条件)----
+# ---- 事件触发表(踩格触发已在楼层 event 层属性接线;进层/杀怪类见楼层字段)----
 TRIGGERS = {}
-# ---- 楼层编号映射(待语义报告最终确认;当前按 tmx 编号 = 游戏楼层号,f0=序章层)----
+# ---- 楼层编号映射(tmx 编号 = 游戏楼层号,f0=序章层;考古终审确认)----
 FLOOR_NO = {i: i for i in range(1, 51)} | {0: 0}
+
+# ---- NPC 摆放勘误(语义报告:f39 商人 30 的属性位 (0,10) 与贴图位 (8,1) 错位;
+#      tacthgin 里贴图格可穿行、属性格隐形可达,两头都不对——按贴图位摆,最贴原版)----
+NPC_FIX = {39: {30: (8, 1)}}
 
 
 def _load(name):
@@ -308,6 +319,7 @@ def _flat_list(s):
 
 
 def convert_floor(tmx_path, gid_map):
+    idx = int(tmx_path.stem)                 # tmx 编号 = 楼层号(考古终审确认)
     root = ET.parse(tmx_path).getroot()
     layers, layer_props, layer_ids = {}, {}, {}
     for layer in root.findall("layer"):
@@ -325,13 +337,13 @@ def convert_floor(tmx_path, gid_map):
     grid = [[None] * 11 for _ in range(11)]
     stack_count = 0
     for name, vals in layers.items():          # 按文件内图层顺序:先出现的在下层
-        for idx, gid in enumerate(vals):
+        for pos, gid in enumerate(vals):       # pos=展平坐标(别叫 idx:会遮蔽楼层号)
             if not gid:
                 continue
             cell = cell_from(name, gid, gid_map)
             if cell is None:
                 continue
-            x, y = idx % 11, idx // 11
+            x, y = pos % 11, pos // 11
             item = {"layer": name, "layer_id": layer_ids[name], **cell}
             if grid[y][x] is None:
                 grid[y][x] = [item]
@@ -345,11 +357,16 @@ def convert_floor(tmx_path, gid_map):
                 for it in stack:
                     if it["kind"] == "stair":
                         stairs.append({"dir": it["dir"], "x": x, "y": y})
-    # ---- NPC 摆放:npc 层属性 {位置: NPC id} ----
+    # ---- NPC 摆放:npc 层属性 {位置: NPC id}(f39 商人错位勘误见 NPC_FIX) ----
     npcs = []
     for k, v in layer_props.get("npc", {}).items():
         if k.isdigit():
-            npcs.append({"npc": int(v), **_pos_to_xy(k)})
+            entry = {"npc": int(v), **_pos_to_xy(k)}
+            fix = NPC_FIX.get(idx).get(entry["npc"]) if idx in NPC_FIX else None
+            if fix:
+                entry["x"], entry["y"] = fix
+                entry["fix"] = "tacthgin 属性位与贴图位错位,按贴图位摆放"
+            npcs.append(entry)
     # ---- 踩格触发:event 层属性 {位置: 事件id} ----
     triggers = []
     for k, v in layer_props.get("event", {}).items():
@@ -361,14 +378,20 @@ def convert_floor(tmx_path, gid_map):
     loc = layer_props.get("stair", {}).get("location")
     if loc:
         parts = [int(v) for v in loc.split(",")]
+        # '0' 是"无此落点"的占位(f1 无下行梯),归一成 None,免得 (0,0) 假落点
         stair_links = {   # f0 地下室只有上行梯,location 仅 1 值
-            "up_stand": _flat_pos(parts[0]),
-            "down_stand": _flat_pos(parts[1]) if len(parts) > 1 else None,
+            "up_stand": _flat_pos(parts[0]) if parts[0] else None,
+            "down_stand": _flat_pos(parts[1]) if len(parts) > 1 and parts[1] else None,
             "up_diff": parts[2] if len(parts) > 2 else 1,
             "down_diff": parts[3] if len(parts) > 3 else -1,
         }
     # ---- 杀守卫开门:door 层属性 {'门位置列表': '守卫位置列表'}(杀光守卫→门全开) ----
     guard_doors = []
+    door_positions = []                     # 本层门格位置(appearEvent 要用)
+    for y, row in enumerate(grid):
+        for x, st in enumerate(row):
+            if st and any(c.get("layer") == "door" for c in st):
+                door_positions.append([x, y])
     for k, v in layer_props.get("door", {}).items():
         if k.replace(",", "").isdigit():
             guard_doors.append({"doors": _flat_list(k), "guards": _flat_list(v)})
@@ -384,13 +407,64 @@ def convert_floor(tmx_path, gid_map):
         kill_s, keep_s = rest.split(":", 1)
         kill_triggers.append({"event": int(ev), "kill": _flat_list(kill_s),
                               "keep_alive": _flat_list(keep_s)})
-    # ---- 先攻怪位置(40层大屠杀 12 只;用户已确认暂不启用,数据先保留) ----
+    # ---- 先攻怪位置(40 层 12 只;2026-09-06 用户拍板启用,引擎按此表传 flags)----
     first_attack = _flat_list(mprops["firstAttack"]) if mprops.get("firstAttack") else []
+
+    # ---- 机关语义物化(v5,语义侦察报告)----
+    dprops = layer_props.get("door", {})
+
+    def mark(layer, pos, **flags):
+        """给 (层, 展平位置) 定位的格子打标记;该层该格没格子就不打(数据残留无害)。"""
+        x, y = int(pos) % 11, int(pos) // 11
+        for cell in (grid[y][x] or []):
+            if cell.get("layer") == layer:
+                cell.update(flags)
+
+    # hide(各层):该格"幽灵化"——不可见/可穿越/不可交互,等事件 show 显现
+    # (f10 隐藏上梯、f32 上梯的隐形史莱姆、f33 下梯上的隐形黄门、f41 墙后巫师……)
+    for lname, lprops in layer_props.items():
+        if lprops.get("hide"):
+            mark(lname, lprops["hide"], hide=True)
+    # passive(门层):撞不开的墙门,等小偷挖/杀怪解锁/守卫门
+    if dprops.get("passive"):
+        mark("door", dprops["passive"], passive=True)
+    # appear(门层,单坐标):隐形但挡路,撞一下显形,显形后永远是墙(f33 暗墙)
+    if dprops.get("appear"):
+        mark("door", dprops["appear"], appear=True)
+    # appearEvent(门层,事件id):本层【全部门】隐形挡路,全撞现 → 触发事件(f23 迷宫→事件8)
+    appear_event = None
+    if dprops.get("appearEvent"):
+        appear_event = {"event": int(dprops["appearEvent"]), "positions": door_positions}
+        for p in door_positions:
+            mark("door", p[1] * 11 + p[0], appear=True)
+    # disappearEvent(门层,'取消位…:事件:完成位…'):开钥匙门记账,
+    # 开到取消位=永久作废,开齐完成位=触发事件(f39 对称黄门机关)
+    disappear_event = None
+    if dprops.get("disappearEvent"):
+        cancel_s, ev_s, done_s = dprops["disappearEvent"].split(":")
+        disappear_event = {"event": int(ev_s), "cancel": _flat_list(cancel_s),
+                            "complete": _flat_list(done_s)}
+    # monsterCondition(门层,'门位:怪位'):杀掉怪位的怪 → 门位的 passive 门解锁
+    door_unlocks = []
+    if dprops.get("monsterCondition"):
+        door_p, kill_p = dprops["monsterCondition"].split(":")
+        door_unlocks.append({"door": _flat_pos(door_p), "kill": _flat_pos(kill_p)})
+    # wallShow(门层,位):撞开 NORMAL 假墙后,显现该位藏着的元素(f41 连锁)
+    wall_shows = _flat_list(dprops["wallShow"]) if dprops.get("wallShow") else []
+    # monsterMove(怪层,位列表):吃魔伤时该怪镜像瞬移到以勇士为中心的对称格(f47 巫师)
+    if mprops.get("monsterMove"):
+        for p in str(mprops["monsterMove"]).split(","):
+            mark("monster", p, monster_move=True)
+
     wiring = {
         "stair_links": stair_links,
         "guard_doors": guard_doors,
         "kill_triggers": kill_triggers,
         "first_attack": first_attack,
+        "appear_event": appear_event,
+        "disappear_event": disappear_event,
+        "door_unlocks": door_unlocks,
+        "wall_shows": wall_shows,
     }
     return grid, stairs, npcs, triggers, layer_props, stack_count, wiring
 
@@ -408,12 +482,16 @@ def convert_floors(gid_map):
             "grid": grid,                          # 每格 null 或叠放栈(自下而上)
             "stairs": stairs,
             "stair_links": wiring["stair_links"],  # 楼梯落点与层差(43层上梯+2/45层下梯-2)
-            "npcs": npcs,                          # 由 npc 层属性机械接线
+            "npcs": npcs,                          # 由 npc 层属性机械接线(含 f39 勘误)
             "triggers": triggers,                  # 踩格触发(由 event 层属性接线)
-            "guard_doors": wiring["guard_doors"],  # 杀光守卫→门开
+            "guard_doors": wiring["guard_doors"],  # 杀光守卫→门开(不限门 id)
             "kill_triggers": wiring["kill_triggers"],  # 杀光指定怪→触发事件(含49层封印阵)
-            "first_attack": wiring["first_attack"],   # 先攻怪位置(40层,暂未启用)
-            "layer_props": layer_props,            # 其余原始属性(hide/passive/appearEvent 等)
+            "first_attack": wiring["first_attack"],   # 先攻怪位置(40层,已启用)
+            "appear_event": wiring["appear_event"],   # f23 隐形墙迷宫:全撞现→触发事件
+            "disappear_event": wiring["disappear_event"],  # f39 开钥匙门记账机关
+            "door_unlocks": wiring["door_unlocks"],   # 杀怪解锁 passive 门(f41)
+            "wall_shows": wiring["wall_shows"],       # 撞开假墙→显现藏着的元素(f41)
+            "layer_props": layer_props,            # 其余原始属性(备查)
         }
         _write(FLOORS_OUT / f"f{idx}.json", doc)
         total_stacks += stacks

@@ -238,6 +238,103 @@ def test_placements_survive_save_load(tmp_path, monkeypatch):
     assert any(c.get("kind") == "npc" for c in doc["grid"][6][5])
 
 
+# ================================================================ 机关语义(v5 物化)
+
+def test_f23_invisible_maze_reveal():
+    """23 层隐形墙迷宫:撞一下显形(显形后永远是墙);43 面全撞现 → 事件 8 挂起到 29 层。"""
+    eng = make_engine(floor=23, pos=(0, 0))
+    doc = eng.floor_doc()
+    positions = [tuple(p) for p in doc["appear_event"]["positions"]]
+    assert len(positions) == 43
+    x, y = positions[0]
+    eng.state["hero"]["pos"] = [x + 1 if x < 10 else x - 1, y]
+    eng.try_move(-1 if x < 10 else 1, 0)       # 撞上第一面隐形墙
+    stack = eng.floor_doc()["grid"][y][x]
+    assert stack and stack[0].get("kind") == "wall" and "appear" not in stack[0]
+    assert "显出一面墙" in eng.message
+    for x, y in positions[1:]:                 # 其余 42 面按同一规则显形
+        cell = next((c for c in (eng.floor_doc()["grid"][y][x] or [])
+                     if c.get("appear")), None)
+        if cell:
+            eng._reveal_appear(x, y, cell)
+    pend = eng.state["flags"].get("pending_events", [])
+    assert {"floor": 29, "event": 8} in pend   # 全撞现→事件8→挂起等 29 层
+
+
+def test_f33_hidden_door_over_stair():
+    """33 层 (10,0):隐形黄门压着下梯——隐藏格不挡路,踩上去直接下楼(原版短路机关)。"""
+    eng = make_engine(floor=33, pos=(10, 1))
+    eng.try_move(0, -1)                        # 踩上 (10,0)
+    assert eng.state["floor"] == 32            # 顺利下楼,没被隐形门挡住
+    assert eng.state["hero"]["pos"] == list(DATA["floors"]["32"]["stair_links"]["up_stand"])
+
+
+def test_f14_guard_wall_door_opens():
+    """14 层:杀光 3 只兽人武士 → 压着钥匙的 passive 墙门自动开(守卫门不看门 id)。"""
+    eng = make_engine(floor=14, pos=(0, 0))
+    for x, y in [(0, 0), (2, 0), (1, 1)]:      # 守卫位(楼层 guard_doors 数据)
+        eng.api_set_cell(14, x, y, None)
+    stack = eng.floor_doc()["grid"][2][0]      # 门位 (0,2)
+    assert stack and all(c.get("kind") != "door" for c in stack)   # 墙门弹开了
+    assert any(c.get("kind") == "prop" for c in stack)             # 露出压着的钥匙
+
+
+def test_f41_unlock_wall_reveal_wizard():
+    """41 层连锁:杀 (1,1) 巫师 → (9,1) 假墙解锁 → 撞开 → 显现墙后藏着的第二只巫师。"""
+    eng = make_engine(floor=41, pos=(8, 1))
+    eng.api_set_cell(41, 1, 1, None)            # 杀 (1,1) 高级巫师(它本不可正面战)
+    door = eng.floor_doc()["grid"][1][9][-1]
+    assert door.get("kind") == "door" and not door.get("passive")  # passive 解除
+    eng.try_move(1, 0)                          # 撞开假墙
+    stack = eng.floor_doc()["grid"][1][9] or []
+    assert all(c.get("kind") != "door" for c in stack)             # 墙开了
+    wizard = next((c for c in stack if c.get("kind") == "monster"), None)
+    assert wizard is not None and not wizard.get("hide")           # 墙后巫师现身
+
+
+def test_f47_wizard_mirror_teleport():
+    """47 层:吃巫师魔伤后,该巫师镜像瞬移到以勇士为中心的对称格。"""
+    eng = make_engine(floor=47, pos=(6, 1))
+    # (6,1)/(8,1) 原是暗道墙贴图,清出来当通路,对称格 (8,1) 才算空地
+    eng.api_set_cell(47, 6, 1, None)
+    eng.api_set_cell(47, 8, 1, None)
+    eng.state["hero"]["shield"] = None          # 序章自带神圣盾会免疫魔伤,先卸掉
+    eng.state["hero"]["pos"] = [6, 1]
+    eng._post_step(6, 1)                        # 站到 (6,1) 的结算(巫师在 (7,1) 相邻)
+    grid = eng.floor_doc()["grid"]
+    assert any(c.get("id") == 126 for c in (grid[1][8] or []))    # 瞬移到 (8,1)
+    assert not grid[1][7]                                       # 原位腾空
+
+
+def _open_f39_door(eng, x, y):
+    eng.state["hero"]["pos"] = [x, y - 1]
+    eng.try_move(0, 1)                          # 从上往下撞门
+
+
+def test_f39_puzzle_cancelled_by_wrong_door():
+    """39 层黄门机关:先开"错门"(1,1) → 整个机关永久作废,开齐对的也不再触发。"""
+    eng = make_engine(floor=39, pos=(1, 0))
+    eng.state["hero"]["keys"]["yellow"] = 3
+    _open_f39_door(eng, 1, 1)                   # cancel 名单里的错门
+    assert eng.state["flags"]["disappear_events"]["39"]["cancelled"] is True
+    _open_f39_door(eng, 3, 1)                   # 完成门1
+    _open_f39_door(eng, 5, 3)                   # 完成门2
+    assert 16 not in eng.state["flags"].get("events_done", [])
+
+
+def test_f39_puzzle_completed_opens_prison():
+    """39 层黄门机关:开齐 (3,1)+(5,3) 两扇"对门" → 事件16:监狱门开+中心飞行器出现。"""
+    eng = make_engine(floor=39, pos=(3, 0))
+    eng.state["hero"]["keys"]["yellow"] = 2
+    _open_f39_door(eng, 3, 1)
+    _open_f39_door(eng, 5, 3)
+    drain_dialog(eng)
+    assert 16 in eng.state["flags"]["events_done"]
+    stack = eng.floor_doc()["grid"][3][3] or []     # (3,3)=展平36
+    assert all(c.get("kind") != "door" for c in stack)               # 监狱门开了
+    assert any(c.get("kind") == "prop" and c.get("id") == 32 for c in stack)  # 飞行器
+
+
 # ================================================================ 结局
 
 def test_kill_real_boss_wins():

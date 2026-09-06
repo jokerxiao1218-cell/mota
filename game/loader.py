@@ -106,6 +106,32 @@ def validate(data):
         for p in fl.get("first_attack", []):
             if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
                 errors.append(f"楼层 {fno}:先攻怪坐标非法 {p}")
+        # ---- 机关语义字段(v5 物化)----
+        for cell in (c for row in fl["grid"] for st in row if st for c in st):
+            for marker in ("hide", "appear", "passive", "monster_move"):
+                if marker in cell and not isinstance(cell[marker], bool):
+                    errors.append(f"楼层 {fno}:格子标记 {marker} 不是布尔 {cell}")
+        ae = fl.get("appear_event")
+        if ae:
+            if ae.get("event") not in event_ids:
+                errors.append(f"楼层 {fno}:隐形墙机关事件 {ae.get('event')} 不存在")
+            for p in ae.get("positions", []):
+                if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                    errors.append(f"楼层 {fno}:隐形墙坐标非法 {p}")
+        de = fl.get("disappear_event")
+        if de:
+            if de.get("event") not in event_ids:
+                errors.append(f"楼层 {fno}:黄门机关事件 {de.get('event')} 不存在")
+            for p in de.get("cancel", []) + de.get("complete", []):
+                if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                    errors.append(f"楼层 {fno}:黄门机关坐标非法 {p}")
+        for unlock in fl.get("door_unlocks") or []:
+            for p in (unlock.get("door"), unlock.get("kill")):
+                if p is None or not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                    errors.append(f"楼层 {fno}:杀怪解锁门坐标非法 {unlock}")
+        for p in fl.get("wall_shows") or []:
+            if not (0 <= p[0] < 11 and 0 <= p[1] < 11):
+                errors.append(f"楼层 {fno}:墙后显现坐标非法 {p}")
 
     for mid, mon in data["monsters"].items():
         if mon.get("event") is not None and mon["event"] not in event_ids:

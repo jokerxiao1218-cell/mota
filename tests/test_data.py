@@ -176,6 +176,48 @@ def test_semantic_wiring(data):
     assert show_acts and all(a["data"] == 115 for a in show_acts)
 
 
+def test_mechanism_wiring(data):
+    """机关语义物化(v5,语义侦察报告):hide/appear/passive/monster_move 格子标记
+    + appear_event/disappear_event/door_unlocks/wall_shows 楼层字段。"""
+    floors = data["floors"]
+    # f23 隐形墙迷宫:43 面隐形墙(撞一下显形,显形后永远是墙),全撞现→事件8
+    f23 = floors["23"]
+    assert f23["appear_event"]["event"] == 8
+    assert len(f23["appear_event"]["positions"]) == 43
+    assert all(any(c.get("appear") for c in f23["grid"][y][x])
+               for x, y in (tuple(p) for p in f23["appear_event"]["positions"]))
+    # f39 对称黄门机关:开错 7 门任一=永久作废;开齐 2 门→事件16(监狱门+中心飞行器)
+    de = floors["39"]["disappear_event"]
+    assert de["event"] == 16
+    assert len(de["cancel"]) == 7 and len(de["complete"]) == 2
+    # f39 商人勘误:tacthgin 属性位 (0,10) 与贴图位 (8,1) 错位,按贴图位摆
+    npc30 = [n for n in floors["39"]["npcs"] if n["npc"] == 30][0]
+    assert (npc30["x"], npc30["y"]) == (8, 1) and "fix" in npc30
+    # f41 连锁:杀 (1,1) 巫师 → 解锁 (9,1) 假墙(passive);撞开假墙 → 显现 (9,1)
+    f41 = floors["41"]
+    assert f41["door_unlocks"] == [{"door": [9, 1], "kill": [1, 1]}]
+    assert f41["wall_shows"] == [[9, 1]]
+    assert any(c.get("passive") for st in f41["grid"][1] if st for c in st
+               if c.get("layer") == "door")
+    # f47 镜像巫师:2 只高级巫师带 monster_move
+    f47 = floors["47"]
+    mm = [[x, y] for y, row in enumerate(f47["grid"]) for x, st in enumerate(row)
+          if st for c in st if c.get("monster_move")]
+    assert mm == [[7, 1], [0, 8]]
+    # hide 格:f10 (5,10) 上梯隐藏(杀骑士队长后事件18显现),不是镐破墙
+    f10 = floors["10"]
+    assert any(c.get("kind") == "stair" and c.get("hide")
+               for st in f10["grid"][10] if st for c in st)
+    # f1 无下行梯:location 的 '0' 占位归一成 None
+    assert floors["1"]["stair_links"]["down_stand"] is None
+    # 守卫门的门 id 混用(1004/1006 居多),引擎不能按 1005 过滤——数据侧钉死事实
+    ids = {c.get("id") for fno, fl in floors.items()
+           for gd in fl.get("guard_doors") or []
+           for p in gd["doors"] for st in [fl["grid"][p[1]][p[0]]] if st
+           for c in [st[-1]] if c.get("kind") == "door"}
+    assert ids == {1004, 1005, 1006}, ids
+
+
 def test_floor_wiring(data):
     """NPC 摆放与踩格触发已由层属性机械接线;引用全部有效。"""
     npc_total = trig_total = 0

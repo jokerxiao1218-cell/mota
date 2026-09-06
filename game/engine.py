@@ -270,9 +270,15 @@ class Engine:
                 return
         lst.append(entry)
 
-    def _pop_cell(self, fno, x, y, stack):
-        """弹掉栈顶(开门/杀怪/捡东西共用):栈空了就把格子置 None。"""
-        if stack:
+    def _pop_cell(self, fno, x, y, stack, cell=None):
+        """弹掉栈顶(或指定那格):开门/杀怪/捡东西共用;栈空了就把格子置 None。
+        传 cell 是因为隐藏格可能压在可见格上面——弹的必须是撞到的那格。"""
+        if cell is not None:
+            for i, c in enumerate(stack):
+                if c is cell:
+                    stack.pop(i)
+                    break
+        elif stack:
             stack.pop()
         if not stack:
             self.floor_doc(fno)["grid"][y][x] = None
@@ -299,8 +305,16 @@ class Engine:
         return bool(meta and meta.get("walkable"))
 
     def _blocked(self, stack):
-        """叠放栈里【任何一层】不可通行,整格就算挡路(门下压着道具也进不去)。"""
-        return any(not self._walkable(cell) for cell in stack)
+        """叠放栈里【任何一层】不可通行,整格就算挡路(门下压着道具也进不去)。
+        隐藏格(hide)是"幽灵":不可见也不可穿越的原版规则里它挡的是渲染,
+        碰撞直接放行(10 层隐形黄门压着下梯照样下楼、隐形怪不挡路)。"""
+        return any(not self._walkable(cell) and not cell.get("hide")
+                   for cell in stack)
+
+    def _visible_top(self, stack):
+        """从栈顶往下第一个可见格(隐藏/隐形格当不存在——撞的是它下面的东西)。"""
+        return next((c for c in reversed(stack or [])
+                     if not c.get("hide") and not c.get("appear")), None)
 
     def try_move(self, dx, dy):
         """朝 (dx,dy) 走一格:先判阻挡,阻挡就跟栈顶交互;能走就结算到达效果。"""
@@ -320,9 +334,12 @@ class Engine:
         self._arrive(nx, ny)
 
     def _interact(self, nx, ny, stack):
-        """撞上了:只跟最上层交互。"""
-        cell = stack[-1]
-        if cell.get("hide"):                    # 隐藏格:不可交互(踩楼梯也不换层)
+        """撞上了:只跟最上层【非隐藏】格交互(隐藏格是幽灵;隐形墙撞了显形)。"""
+        cell = next((c for c in reversed(stack or []) if not c.get("hide")), None)
+        if cell is None:
+            return
+        if cell.get("appear"):                  # 隐形墙(f23 迷宫/f33 暗墙):
+            self._reveal_appear(nx, ny, cell)    # 撞一下显形,显形后永远是墙
             return
         kind = cell.get("kind")
         if kind == "door":
@@ -335,16 +352,44 @@ class Engine:
             self._bump_altar()
         # 墙/岩浆/其他:不动,也没动静
 
+    def _reveal_appear(self, nx, ny, cell):
+        """撞上隐形墙:显形。原版规则:显形≠可开(它是面真墙),所以直接
+        变成普通墙格;f23 迷宫还要查"全撞现→触发事件"。"""
+        fno = self.state["floor"]
+        cell.pop("appear")
+        cell["kind"] = "wall"
+        self._record_change(fno, nx, ny)
+        self.message = "撞到了什么——显出一面墙!"
+        self._check_appear_event()
+
+    def _check_appear_event(self):
+        """f23 隐形墙迷宫:appear_event 名单里的墙全部显形 → 触发事件(解锁
+        29 层小偷的暗道剧情)。进度天然落进 floors_state(显形=格子栈变化)。"""
+        doc = self.floor_doc()
+        ae = doc.get("appear_event")
+        if not ae:
+            return
+        still_hidden = any(
+            any(c.get("appear") for c in (doc["grid"][y][x] or []))
+            for x, y in (tuple(p) for p in ae["positions"]))
+        if not still_hidden:
+            self._start_event(ae["event"])
+
     def _bump_door(self, nx, ny, stack):
         """撞门分派(勘误终审):
-        1001/1002/1003=钥匙门;1006 墙门=一撞就开;1004/1005=只挡路等事件/守卫。"""
+        1001/1002/1003=钥匙门;1006 墙门=一撞就开(passive 的撞不开);
+        1004/1005=只挡路等事件/守卫。"""
         fno = self.state["floor"]
-        cell = stack[-1]
+        cell = self._visible_top(stack)
         did = cell.get("id")
 
         if did == 1006:                        # 墙门:假墙,撞开露出下层
-            self._pop_cell(fno, nx, ny, stack)
+            if cell.get("passive"):            # passive:撞不开(等小偷挖/杀怪解锁)
+                self.message = "这堵墙纹丝不动(得想别的办法)"
+                return
+            self._pop_cell(fno, nx, ny, stack, cell)
             self.message = "撞开了一道暗门!"
+            self._on_wall_opened()             # f41:撞开假墙→显现墙后藏着的巫师
             return
 
         if did in KEY_DOORS:                    # 钥匙门
@@ -352,8 +397,9 @@ class Engine:
             keys = self.state["hero"]["keys"]
             if keys.get(key_name, 0) > 0:
                 keys[key_name] -= 1
-                self._pop_cell(fno, nx, ny, stack)
+                self._pop_cell(fno, nx, ny, stack, cell)
                 self.message = f"用一把{cn}钥匙打开了{cn}门"
+                self._check_disappear_event(nx, ny)   # f39 对称黄门机关
             else:
                 self.message = f"需要一把{cn}钥匙"
             return
@@ -366,7 +412,7 @@ class Engine:
         """撞怪:预判 → 打得过就结算(扣血/弹栈/金币),打不过原地不动。"""
         hero = self.state["hero"]
         fno = self.state["floor"]
-        cell = stack[-1]
+        cell = self._visible_top(stack)
         monster = self._monster(cell.get("id"))
         if not monster:
             return
@@ -377,7 +423,7 @@ class Engine:
 
         hero["hp"] -= result.get("hero_damage", 0)
         hero["gold"] += result.get("gold", 0)
-        self._pop_cell(fno, nx, ny, stack)
+        self._pop_cell(fno, nx, ny, stack, cell)
         opened = self._note_monster_death(fno, nx, ny)
         self.message = (f"打败了 {monster.get('name')},损血 {result.get('hero_damage', 0)},"
                         f"得 {result.get('gold', 0)} 金币")
@@ -430,18 +476,21 @@ class Engine:
         grid = doc["grid"]
         stack = grid[y][x] or []
 
-        # a) 顶上是道具就捡(可能连着叠几个)
-        while stack and stack[-1].get("kind") == "prop" and not stack[-1].get("hide"):
-            prop = stack[-1]
+        # a) 顶上是道具就捡(可能连着叠几个;隐藏的道具当不存在)
+        while True:
+            prop = self._visible_top(stack)
+            if prop is None or prop.get("kind") != "prop":
+                break
             item = self.data["items"].get(str(prop.get("id")), {})
             # 第三参传整个数据大字典(core 内部查 data["items"]),不是道具条目
             self.state = self.rules.apply_pickup(self.state, prop.get("id"), self.data)
-            self._pop_cell(self.state["floor"], x, y, stack)
+            self._pop_cell(self.state["floor"], x, y, stack, prop)
             self.message = f"获得 {item.get('name', '未知道具')}"
 
-        # b) 楼梯:换层(隐藏楼梯踩了不换层)
-        if stack and stack[-1].get("kind") == "stair" and not stack[-1].get("hide"):
-            self._land(stack[-1].get("dir", "up"))
+        # b) 楼梯:换层(隐藏楼梯踩了不换层;隐形门压着楼梯也不影响下楼)
+        stair = next((c for c in reversed(stack) if not c.get("hide")), None)
+        if stair is not None and stair.get("kind") == "stair":
+            self._land(stair.get("dir", "up"))
             return                              # 换层后本层剩余结算不再做
 
         # c) 踩格触发器
@@ -465,8 +514,34 @@ class Engine:
         if dmg:
             hero["hp"] -= dmg
             self.message = f"被魔法击中,损失 {dmg} 生命"
+            self._mirror_wizards(x, y)          # f47 巫师电完就镜像瞬移
         self.state = self.rules.guard_trap(self.state, doc, x, y)
         self._check_dead()
+
+    def _mirror_wizards(self, hx, hy):
+        """47 层巫师镜像瞬移(monster_move 标记):勇士吃魔伤时,相邻的这种巫师
+        跳到以勇士为中心的对称格(新位 = 2×怪位 − 勇士位,参考实现 DamageSystem),
+        目标必须是纯地板(空格),不然不挪。"""
+        doc = self.floor_doc()
+        fno = self.state["floor"]
+        for dx, dy in ((0, -1), (0, 1), (-1, 0), (1, 0)):
+            mx, my = hx + dx, hy + dy
+            if not (0 <= mx < GRID and 0 <= my < GRID):
+                continue
+            stack = doc["grid"][my][mx] or []
+            mcell = next((c for c in reversed(stack)
+                          if c.get("kind") == "monster" and c.get("monster_move")), None)
+            if mcell is None:
+                continue
+            tx, ty = 2 * mx - hx, 2 * my - hy
+            if not (0 <= tx < GRID and 0 <= ty < GRID) or doc["grid"][ty][tx]:
+                continue                        # 对称格出界/不是空地:原地不动
+            doc["grid"][ty][tx] = [mcell]
+            stack.remove(mcell)
+            if not stack:
+                doc["grid"][my][mx] = None
+            self._record_change(fno, mx, my)
+            self._record_change(fno, tx, ty)
 
     def _land(self, direction):
         """踩楼梯换层。"""
@@ -525,11 +600,14 @@ class Engine:
         return f"{self.state['floor']}:{x},{y}" not in dead
 
     def _check_guard_doors(self):
-        """杀完怪查本层 guard_doors(勘误终审:1005 怪物门 = 杀光守卫自动开)。
+        """杀完怪查本层 guard_doors(勘误终审:守卫门 = 杀光守卫自动开)。
 
         一组守卫的格子里一只怪都不剩(栈里翻遍无 monster)→ 这组 doors
-        里还关着的 1005 门弹栈,露出压在下面的东西(原版机制)。
-        只在引擎杀怪后调用;事件层杀怪走 api 的集成由 batch 6 接线。
+        里还关着的门弹栈,露出压在下面的东西(原版机制)。
+        不按门 id 过滤:数据里守卫门实际是 1004(事件生成)/1006(墙门)居多,
+        只有 2 层是 1005——参考实现 triggerMonsterDoor 本来就不看 id,
+        按 1005 过滤会让全塔十几个机关永远打不开。
+        玩家杀怪与事件/道具杀怪(api_set_cell)同一口径,都在杀怪台账后调。
         """
         doc = self.floor_doc()
         fno = self.state["floor"]
@@ -551,8 +629,7 @@ class Engine:
                 continue
             for dx, dy in doors:
                 stack = doc["grid"][dy][dx]
-                if (stack and stack[-1].get("kind") == "door"
-                        and stack[-1].get("id") == 1005):
+                if stack and stack[-1].get("kind") == "door":
                     self._pop_cell(fno, dx, dy, stack)
                     opened = True
         return opened
@@ -568,7 +645,20 @@ class Engine:
             dead.append(key)
         opened = self._check_guard_doors()
         self._check_kill_triggers(fno)
+        self._check_door_unlocks(fno, x, y)
         return opened
+
+    def _check_door_unlocks(self, fno, x, y):
+        """杀怪解锁 passive 门(f41:杀掉 (1,1) 的高级巫师 → (9,1) 的假墙可撞开)。"""
+        doc = self.floor_doc(fno)
+        for unlock in doc.get("door_unlocks") or []:
+            if [x, y] != unlock["kill"]:
+                continue
+            dx, dy = unlock["door"]
+            for cell in (doc["grid"][dy][dx] or []):
+                if cell.pop("passive", None):
+                    self._record_change(fno, dx, dy)
+                    self.message = "远处传来一声轰响,好像有什么墙松动了……"
 
     def _any_dead(self, fno, positions):
         return any(f"{fno}:{x},{y}" in self.state["flags"].get("monsters_dead", [])
@@ -601,6 +691,37 @@ class Engine:
     def _all_dead(self, fno, positions):
         dead = self.state["flags"].get("monsters_dead", [])
         return all(f"{fno}:{x},{y}" in dead for x, y in positions)
+
+    def _check_disappear_event(self, x, y):
+        """f39 对称黄门机关(disappear_event):开钥匙门记账——
+        开到"取消"名单任一门 → 整个机关永久作废;开齐"完成"名单 → 触发事件
+        (监狱门免费开 + 中心飞行器出现)。进度记 flags,读档不重放。"""
+        doc = self.floor_doc()
+        de = doc.get("disappear_event")
+        if not de:
+            return
+        fno = self.state["floor"]
+        prog = (self.state["flags"].setdefault("disappear_events", {})
+                .setdefault(str(fno), {}))
+        if prog.get("cancelled") or prog.get("done"):
+            return
+        if [x, y] in de["cancel"]:
+            prog["cancelled"] = True
+            self.message = "这扇门后空空如也,但似乎有什么机关就此失效了……"
+            return
+        if [x, y] in de["complete"]:
+            opened = prog.setdefault("opened", [])
+            if [x, y] not in opened:
+                opened.append([x, y])
+            if all(p in opened for p in de["complete"]):
+                prog["done"] = True
+                self._start_event(de["event"])
+
+    def _on_wall_opened(self):
+        """撞开一扇 NORMAL 假墙后:显现 wall_shows 名单里藏着的元素(f41 连锁)。"""
+        doc = self.floor_doc()
+        for x, y in doc.get("wall_shows") or []:
+            self.api_show(self.state["floor"], x, y)
 
     def _check_dead(self):
         if self.state["hero"]["hp"] <= 0:
@@ -752,7 +873,8 @@ class Engine:
                 if not stack:
                     continue
                 for cell in stack:
-                    if cell.get("kind") != "monster" or cell.get("hide"):
+                    if cell.get("kind") != "monster" or cell.get("hide") \
+                            or cell.get("appear"):
                         continue
                     mid = cell.get("id")
                     first = self._is_first_attack(gx, gy)
@@ -1125,7 +1247,7 @@ class Engine:
             for stack in row:
                 top = None
                 for cell in reversed(stack or []):   # 从顶往下找第一个可见的
-                    if not cell.get("hide"):
+                    if not cell.get("hide") and not cell.get("appear"):
                         top = cell
                         break
                 line.append(top)
